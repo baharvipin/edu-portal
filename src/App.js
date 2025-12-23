@@ -1,8 +1,8 @@
 import React from 'react';
-import LoginPage from './login/LoginPage';
+import RegistrationPage from './registration/RegistrationPage';
 
 function App() {
-  return <LoginPage />;
+  return <RegistrationPage />;
 }
 
 export default App;
