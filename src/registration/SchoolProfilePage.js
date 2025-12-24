@@ -96,9 +96,9 @@ function SchoolProfilePage({ registrationData }) {
         hostel: Boolean(data.get('hostel')),
       },
       documents: {
-        logo: files.logo,
-        registrationCertificate: files.regCert,
-        boardCertificate: files.boardCert,
+        logo: files?.logo ?? '',
+        registrationCertificate: files?.regCert ?? '',
+        boardCertificate: files?.boardCert ?? '',
       },
       attendanceMode,
       notifications,
