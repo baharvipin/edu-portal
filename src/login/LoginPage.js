@@ -16,7 +16,7 @@ import {
   Typography,
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import '../App.css';
 
 const theme = createTheme({
@@ -252,7 +252,10 @@ console.log('Login response data:', data);
               </Button>
 
               <Typography variant="body2" color="text.secondary" textAlign="center">
-                Don&apos;t have an account? <Link href="#">Contact admin</Link>
+                Don&apos;t have an account?{' '}
+                <Link component={RouterLink} to="/register" underline="hover">
+                  Register Here
+                </Link>
               </Typography>
             </Box>
           </Paper>
