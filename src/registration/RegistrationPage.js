@@ -168,7 +168,7 @@ function RegistrationPage() {
     };
 
     try {
-      const response = await fetch('/api/schools/register', {
+      const response = await fetch('http://localhost:4000/api/schools/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

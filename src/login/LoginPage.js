@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
+  Alert,
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Container,
   CssBaseline,
   FormControlLabel,
+  FormHelperText,
   Link,
   Paper,
   Stack,
@@ -30,25 +33,128 @@ const theme = createTheme({
 function LoginPage() {
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    remember: false,
+  });
+
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password) => {
+    // At least 8 characters, 1 uppercase, 1 lowercase, 1 number
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    return passwordRegex.test(password);
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (!validatePassword(formData.password)) {
+      newErrors.password =
+        'Password must be at least 8 characters and include uppercase, lowercase, and a number';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (field) => (event) => {
+    const value =
+      field === 'remember' ? event.target.checked : event.target.value;
+
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: '' }));
+    }
+    if (apiError) {
+      setApiError('');
+    }
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const email = data.get('email');
-    const password = data.get('password');
-    const remember = Boolean(data.get('remember'));
-    // TODO: Replace with real auth call
-    // eslint-disable-next-line no-console
-    console.log({ email, password, remember });
+    setApiError('');
 
-    // Simulate successful login
-    localStorage.setItem('isLoggedIn', 'true');
+    const isValid = validateForm();
+    if (!isValid) {
+      return; // do not call API if validation fails
+    }
 
-    const profileCompleted = localStorage.getItem('profileCompleted') === 'true';
+    setLoading(true);
 
-    if (!profileCompleted) {
-      navigate('/school/profile', { replace: true });
-    } else {
-      navigate('/dashboard', { replace: true });
+    try {
+      const response = await fetch('http://localhost:4000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email.trim(),
+          password: formData.password,
+          remember: formData.remember,
+        }),
+      });
+
+      const data = await response.json();
+      // Temporary log for debugging; remove in production
+      // eslint-disable-next-line no-console
+      console.log('Login response data:', data);
+console.log('Login response data:', data);
+      if (!response.ok) {
+        if (data.errors && typeof data.errors === 'object') {
+          const apiErrors = {};
+          Object.keys(data.errors).forEach((key) => {
+            apiErrors[key] = Array.isArray(data.errors[key])
+              ? data.errors[key][0]
+              : data.errors[key];
+          });
+          setErrors((prev) => ({ ...prev, ...apiErrors }));
+        }
+
+        throw new Error(data.message || 'Login failed. Please try again.');
+      }
+
+      localStorage.setItem('isLoggedIn', 'true');
+
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+      }
+      if (typeof data.profileCompleted === 'boolean') {
+        localStorage.setItem(
+          'profileCompleted',
+          data.profileCompleted ? 'true' : 'false',
+        );
+      }
+
+      const profileCompleted =
+        localStorage.getItem('profileCompleted') === 'true';
+
+      if (!profileCompleted) {
+        navigate('/school/profile', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
+    } catch (error) {
+      setApiError(error.message || 'An unexpected error occurred.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -77,6 +183,12 @@ function LoginPage() {
                 </Typography>
               </Box>
 
+              {apiError && (
+                <Alert severity="error" onClose={() => setApiError('')}>
+                  {apiError}
+                </Alert>
+              )}
+
               <Stack spacing={2}>
                 <TextField
                   required
@@ -86,6 +198,10 @@ function LoginPage() {
                   name="email"
                   type="email"
                   autoComplete="email"
+                  value={formData.email}
+                  onChange={handleChange('email')}
+                  error={!!errors.email}
+                  helperText={errors.email}
                 />
                 <TextField
                   required
@@ -95,6 +211,13 @@ function LoginPage() {
                   type="password"
                   id="password"
                   autoComplete="current-password"
+                  value={formData.password}
+                  onChange={handleChange('password')}
+                  error={!!errors.password}
+                  helperText={
+                    errors.password ||
+                    'At least 8 chars, with uppercase, lowercase and a number'
+                  }
                 />
               </Stack>
 
@@ -104,7 +227,14 @@ function LoginPage() {
                 justifyContent="space-between"
               >
                 <FormControlLabel
-                  control={<Checkbox name="remember" color="primary" />}
+                  control={(
+                    <Checkbox
+                      name="remember"
+                      color="primary"
+                      checked={formData.remember}
+                      onChange={handleChange('remember')}
+                    />
+                  )}
                   label="Remember me"
                 />
                 <Link href="#" variant="body2">
@@ -112,8 +242,13 @@ function LoginPage() {
                 </Link>
               </Stack>
 
-              <Button type="submit" variant="contained" size="large">
-                Sign In
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                disabled={loading}
+              >
+                {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
               </Button>
 
               <Typography variant="body2" color="text.secondary" textAlign="center">
