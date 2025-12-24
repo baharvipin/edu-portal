@@ -132,7 +132,7 @@ console.log('Login response data:', data);
       }
 
       localStorage.setItem('isLoggedIn', 'true');
-
+     
       if (data.token) {
         localStorage.setItem('authToken', data.token);
       }
@@ -146,7 +146,11 @@ console.log('Login response data:', data);
       const profileCompleted =
         localStorage.getItem('profileCompleted') === 'true';
 
-      if (!profileCompleted) {
+      if(data.user.userRole){ 
+        localStorage.setItem('userRole', data.user.userRole);
+        navigate(data.user.userRole === 'SUPER_ADMIN' ? '/superadmin/profile' : '/school/profile', { replace: true });
+      }
+     else if (!profileCompleted) {
         navigate('/school/profile', { replace: true });
       } else {
         navigate('/dashboard', { replace: true });

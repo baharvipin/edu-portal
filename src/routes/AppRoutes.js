@@ -6,6 +6,7 @@ const RegistrationPage = lazy(() => import('../registration/RegistrationPage'));
 const SchoolProfilePage = lazy(() => import('../registration/SchoolProfilePage'));
 const DashboardPage = lazy(() => import('../dashboard/DashboardPage'));
 const NoPageFound = lazy(() => import('../noPageFound/NoPageFound'));
+const SuperAdminDashboard = lazy(() => import('../dashboard/SuperAdminDashboard'));
 
 function ProtectedRoute({ children }) {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -20,9 +21,13 @@ function ProtectedRoute({ children }) {
 function ProfileRoute() {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   const profileCompleted = localStorage.getItem('profileCompleted') === 'true';
+  const userRole = localStorage.getItem('userRole');
 
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
+  }
+  if (userRole === 'SUPER_ADMIN') {
+    return <Navigate to="/superadmin/profile" replace />;
   }
 
   if (profileCompleted) {
@@ -59,6 +64,16 @@ function AppRoutes() {
           </Suspense>
         )}
       />
+       <Route
+        path="/superadmin/profile"
+        element={
+            <Suspense fallback={<div>Loading...</div>}>
+<SuperAdminDashboard />
+            </Suspense>
+        
+      }
+      />
+
       <Route
         path="/school/profile"
         element={<ProfileRoute />}
