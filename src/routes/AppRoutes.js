@@ -5,6 +5,7 @@ const LoginPage = lazy(() => import('../login/LoginPage'));
 const RegistrationPage = lazy(() => import('../registration/RegistrationPage'));
 const SchoolProfilePage = lazy(() => import('../registration/SchoolProfilePage'));
 const DashboardPage = lazy(() => import('../dashboard/DashboardPage'));
+const NoPageFound = lazy(() => import('../noPageFound/NoPageFound'));
 
 function ProtectedRoute({ children }) {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -74,7 +75,11 @@ function AppRoutes() {
       />
       <Route
         path="*"
-        element={<Navigate to="/login" replace />}
+        element={(
+          <Suspense fallback={<div>Loading...</div>}>
+            <NoPageFound />
+          </Suspense>
+        )}
       />
     </Routes>
   );
