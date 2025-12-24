@@ -13,6 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 import '../App.css';
 
 const theme = createTheme({
@@ -27,15 +28,28 @@ const theme = createTheme({
 });
 
 function LoginPage() {
+  const navigate = useNavigate();
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get('email');
     const password = data.get('password');
     const remember = Boolean(data.get('remember'));
-    // Replace with real auth call
+    // TODO: Replace with real auth call
     // eslint-disable-next-line no-console
     console.log({ email, password, remember });
+
+    // Simulate successful login
+    localStorage.setItem('isLoggedIn', 'true');
+
+    const profileCompleted = localStorage.getItem('profileCompleted') === 'true';
+
+    if (!profileCompleted) {
+      navigate('/school/profile', { replace: true });
+    } else {
+      navigate('/dashboard', { replace: true });
+    }
   };
 
   return (

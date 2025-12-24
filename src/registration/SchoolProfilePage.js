@@ -16,6 +16,7 @@ import {
   Typography,
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 import '../App.css';
 
 const theme = createTheme({
@@ -42,6 +43,7 @@ function Section({ title, children }) {
 }
 
 function SchoolProfilePage({ registrationData }) {
+  const navigate = useNavigate();
   const [medium, setMedium] = useState('English');
   const [gradingSystem, setGradingSystem] = useState('Grades');
   const [attendanceMode, setAttendanceMode] = useState('Manual');
@@ -105,6 +107,10 @@ function SchoolProfilePage({ registrationData }) {
     // Replace with real submit
     // eslint-disable-next-line no-console
     console.log('Profile submit', payload);
+
+    // Mark profile as completed and redirect to dashboard
+    localStorage.setItem('profileCompleted', 'true');
+    navigate('/dashboard', { replace: true });
   };
 
   return (

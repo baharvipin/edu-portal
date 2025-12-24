@@ -1,8 +1,13 @@
-import React from 'react';
-import RegistrationPage from './registration/RegistrationPage';
+import React, { Suspense, lazy } from 'react';
+
+const AppRoutes = lazy(() => import('./routes/AppRoutes'));
 
 function App() {
-  return <RegistrationPage />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AppRoutes />
+    </Suspense>
+  );
 }
 
 export default App;
