@@ -1,6 +1,6 @@
-import React from 'react';
-import { Box, Container, CssBaseline, Paper, Typography } from '@mui/material';
-import '../App.css';
+import React from "react";
+import { Box, Container, CssBaseline, Paper, Typography } from "@mui/material";
+import "../App.css";
 
 function DashboardPage() {
   return (
@@ -23,5 +23,3 @@ function DashboardPage() {
 }
 
 export default DashboardPage;
-
-

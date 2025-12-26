@@ -1,19 +1,22 @@
-import React, { Suspense, lazy } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import ProtectedLayout from '../components/ProtectedLayout';
+import React, { Suspense, lazy } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import ProtectedLayout from "../components/ProtectedLayout";
 
-const LoginPage = lazy(() => import('../login/LoginPage'));
-const RegistrationPage = lazy(() => import('../registration/RegistrationPage'));
-const SchoolProfilePage = lazy(() => import('../registration/SchoolProfilePage'));
-const DashboardPage = lazy(() => import('../dashboard/DashboardPage'));
-const NoPageFound = lazy(() => import('../noPageFound/NoPageFound'));
-const SuperAdminDashboard = lazy(() => import('../dashboard/SuperAdminDashboard'));
-const SuspendedAccount = lazy(() => import('../account/SuspendedAccount'));
-const AccountDeactivated = lazy(() => import('../account/AccountDeactivated'));
-
+const LoginPage = lazy(() => import("../login/LoginPage"));
+const RegistrationPage = lazy(() => import("../registration/RegistrationPage"));
+const SchoolProfilePage = lazy(
+  () => import("../registration/SchoolProfilePage"),
+);
+const DashboardPage = lazy(() => import("../dashboard/DashboardPage"));
+const NoPageFound = lazy(() => import("../noPageFound/NoPageFound"));
+const SuperAdminDashboard = lazy(
+  () => import("../dashboard/SuperAdminDashboard"),
+);
+const SuspendedAccount = lazy(() => import("../account/SuspendedAccount"));
+const AccountDeactivated = lazy(() => import("../account/AccountDeactivated"));
 
 function ProtectedRoute({ children }) {
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
@@ -23,110 +26,100 @@ function ProtectedRoute({ children }) {
 }
 
 function ProfileRoute() {
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-  const profileCompleted = localStorage.getItem('profileCompleted') === 'true';
-  const status = localStorage.getItem('status');
-  const userRole = localStorage.getItem('userRole');
-alert('userRole:'+userRole);
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const profileCompleted = localStorage.getItem("profileCompleted") === "true";
+  const status = localStorage.getItem("status");
+  const userRole = localStorage.getItem("userRole");
+  alert("userRole:" + userRole);
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
-  if (userRole === 'SUPER_ADMIN') {
+  if (userRole === "SUPER_ADMIN") {
     return <Navigate to="/superadmin/profile" replace />;
   }
-  if (userRole == 'ADMIN' && status === 'PROFILE_SUBMITTED') {
+  if (userRole == "ADMIN" && status === "PROFILE_SUBMITTED") {
     return <Navigate to="/dashboard" replace />;
   }
-    if (userRole == 'ADMIN' && status === 'PROFILE_INCOMPLETE') {
-      return <Navigate to="/school/profile" replace />;
-    }
+  if (userRole == "ADMIN" && status === "PROFILE_INCOMPLETE") {
+    return <Navigate to="/school/profile" replace />;
+  }
 
   if (profileCompleted) {
     return <Navigate to="/dashboard" replace />;
   }
- 
 }
 
 function AppRoutes() {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route
-        path="/"
-        element={<Navigate to="/login" replace />}
-      />
+      <Route path="/" element={<Navigate to="/login" replace />} />
       <Route
         path="/login"
-        element={(
+        element={
           <Suspense fallback={<div>Loading...</div>}>
             <LoginPage />
           </Suspense>
-        )}
+        }
       />
       <Route
         path="/account/suspended"
-        element={(
+        element={
           <Suspense fallback={<div>Loading...</div>}>
             <SuspendedAccount />
           </Suspense>
-        )}
+        }
       />
       <Route
         path="/account/deactivated"
-        element={(
+        element={
           <Suspense fallback={<div>Loading...</div>}>
             <AccountDeactivated />
           </Suspense>
-        )}
-      />
-      
-      <Route
-        path="/register"
-        element={(
-          <Suspense fallback={<div>Loading...</div>}>
-            <RegistrationPage />
-          </Suspense>
-        )}
-      />
-       {/* Protected Routes */}
-      <Route element={<ProtectedLayout />}>
-       <Route
-        path="/superadmin/profile"
-        element={
-            <Suspense fallback={<div>Loading...</div>}>
-                     <SuperAdminDashboard />
-            </Suspense>
-        
-      }
+        }
       />
 
       <Route
-        path="/school/profile"
-        element={<SchoolProfilePage />}
+        path="/register"
+        element={
+          <Suspense fallback={<div>Loading...</div>}>
+            <RegistrationPage />
+          </Suspense>
+        }
       />
-      <Route
-        path="/dashboard"
-        element={(
-          <ProtectedRoute>
+      {/* Protected Routes */}
+      <Route element={<ProtectedLayout />}>
+        <Route
+          path="/superadmin/profile"
+          element={
             <Suspense fallback={<div>Loading...</div>}>
-              <DashboardPage />
+              <SuperAdminDashboard />
             </Suspense>
-          </ProtectedRoute>
-        )}
-      />
+          }
+        />
+
+        <Route path="/school/profile" element={<SchoolProfilePage />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Suspense fallback={<div>Loading...</div>}>
+                <DashboardPage />
+              </Suspense>
+            </ProtectedRoute>
+          }
+        />
       </Route>
       <Route
         path="*"
-        element={(
+        element={
           <Suspense fallback={<div>Loading...</div>}>
             <NoPageFound />
           </Suspense>
-        )}
+        }
       />
     </Routes>
   );
 }
 
 export default AppRoutes;
-
-

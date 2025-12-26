@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from "react";
 import {
   Alert,
   Box,
@@ -16,18 +16,18 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Typography,
-} from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
-import '../App.css';
+} from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
+import "../App.css";
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
+      main: "#1976d2",
     },
     background: {
-      default: '#f3f6fb',
+      default: "#f3f6fb",
     },
   },
 });
@@ -46,23 +46,23 @@ function Section({ title, children }) {
 
 function SchoolProfilePage({ registrationData }) {
   const navigate = useNavigate();
-  const [medium, setMedium] = useState('English');
-  const [gradingSystem, setGradingSystem] = useState('Grades');
-  const [attendanceMode, setAttendanceMode] = useState('Manual');
-  const [notificationMode, setNotificationMode] = useState('Email');
+  const [medium, setMedium] = useState("English");
+  const [gradingSystem, setGradingSystem] = useState("Grades");
+  const [attendanceMode, setAttendanceMode] = useState("Manual");
+  const [notificationMode, setNotificationMode] = useState("Email");
   const [modules, setModules] = useState({
     exams: true,
     homework: false,
   });
   const [files, setFiles] = useState({
-    logo: '',
-    regCert: '',
-    boardCert: '',
+    logo: "",
+    regCert: "",
+    boardCert: "",
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [apiError, setApiError] = useState('');
-  const [apiSuccess, setApiSuccess] = useState('');
+  const [apiError, setApiError] = useState("");
+  const [apiSuccess, setApiSuccess] = useState("");
 
   const logoInput = useRef(null);
   const regCertInput = useRef(null);
@@ -87,15 +87,16 @@ function SchoolProfilePage({ registrationData }) {
     const newErrors = {};
 
     if (!formValues.fullAddress.trim()) {
-      newErrors.fullAddress = 'Full Address is required';
+      newErrors.fullAddress = "Full Address is required";
     }
 
     if (!formValues.registrationNumber.trim()) {
-      newErrors.registrationNumber = 'Registration / Affiliation Number is required';
+      newErrors.registrationNumber =
+        "Registration / Affiliation Number is required";
     }
 
     if (!formValues.yearEstablished.trim()) {
-      newErrors.yearEstablished = 'Year of Establishment is required';
+      newErrors.yearEstablished = "Year of Establishment is required";
     } else {
       const year = Number(formValues.yearEstablished);
       const currentYear = new Date().getFullYear();
@@ -105,15 +106,15 @@ function SchoolProfilePage({ registrationData }) {
     }
 
     if (!formValues.classes.trim()) {
-      newErrors.classes = 'Classes & Sections is required';
+      newErrors.classes = "Classes & Sections is required";
     }
 
     if (!formValues.academicYear.trim()) {
-      newErrors.academicYear = 'Academic Year is required';
+      newErrors.academicYear = "Academic Year is required";
     }
 
     if (!formValues.schoolTimings.trim()) {
-      newErrors.schoolTimings = 'School Timings is required';
+      newErrors.schoolTimings = "School Timings is required";
     }
 
     setErrors(newErrors);
@@ -122,18 +123,18 @@ function SchoolProfilePage({ registrationData }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setApiError('');
-    setApiSuccess('');
+    setApiError("");
+    setApiSuccess("");
 
     const data = new FormData(event.currentTarget);
 
     const requiredValues = {
-      fullAddress: (data.get('fullAddress') || '').toString(),
-      registrationNumber: (data.get('registrationNumber') || '').toString(),
-      yearEstablished: (data.get('yearEstablished') || '').toString(),
-      classes: (data.get('classes') || '').toString(),
-      academicYear: (data.get('academicYear') || '').toString(),
-      schoolTimings: (data.get('schoolTimings') || '').toString(),
+      fullAddress: (data.get("fullAddress") || "").toString(),
+      registrationNumber: (data.get("registrationNumber") || "").toString(),
+      yearEstablished: (data.get("yearEstablished") || "").toString(),
+      classes: (data.get("classes") || "").toString(),
+      academicYear: (data.get("academicYear") || "").toString(),
+      schoolTimings: (data.get("schoolTimings") || "").toString(),
     };
 
     if (!validateForm(requiredValues)) {
@@ -150,26 +151,26 @@ function SchoolProfilePage({ registrationData }) {
       classes: requiredValues.classes.trim(),
       academicYear: requiredValues.academicYear.trim(),
       schoolTimings: requiredValues.schoolTimings.trim(),
-      gradingSystem: gradingSystem || 'Grades',
+      gradingSystem: gradingSystem || "Grades",
       facilities: {
-        labs: Boolean(data.get('labs')),
-        transport: Boolean(data.get('transport')),
-        hostel: Boolean(data.get('hostel')),
+        labs: Boolean(data.get("labs")),
+        transport: Boolean(data.get("transport")),
+        hostel: Boolean(data.get("hostel")),
       },
       documents: {
-        logo: files?.logo || '',
-        registrationCertificate: files?.regCert || '',
-        boardCertificate: files?.boardCert || '',
+        logo: files?.logo || "",
+        registrationCertificate: files?.regCert || "",
+        boardCertificate: files?.boardCert || "",
       },
-      attendanceMode: attendanceMode || 'Manual',
-      notificationMode: notificationMode || 'Email',
+      attendanceMode: attendanceMode || "Manual",
+      notificationMode: notificationMode || "Email",
       modulesEnabled: modules || { exams: true, homework: false },
     };
 
     try {
-      const authToken = localStorage.getItem('authToken');
+      const authToken = localStorage.getItem("authToken");
       const headers = {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       };
 
       if (authToken) {
@@ -177,30 +178,35 @@ function SchoolProfilePage({ registrationData }) {
       }
 
       // eslint-disable-next-line no-console
-      console.log('Sending payload:', payload);
+      console.log("Sending payload:", payload);
 
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/school/complete-profile`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/school/complete-profile`,
+        {
+          method: "POST",
+          headers,
+          body: JSON.stringify(payload),
+        },
+      );
 
       let result;
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
         result = await response.json();
       } else {
         const text = await response.text();
         // eslint-disable-next-line no-console
-        console.error('Non-JSON response:', text);
-        throw new Error(`Server error (${response.status}): ${text || 'Unknown error'}`);
+        console.error("Non-JSON response:", text);
+        throw new Error(
+          `Server error (${response.status}): ${text || "Unknown error"}`,
+        );
       }
 
       // eslint-disable-next-line no-console
-      console.log('API Response:', { status: response.status, result });
+      console.log("API Response:", { status: response.status, result });
 
       if (!response.ok) {
-        if (result.errors && typeof result.errors === 'object') {
+        if (result.errors && typeof result.errors === "object") {
           const apiErrors = {};
           Object.keys(result.errors).forEach((key) => {
             apiErrors[key] = Array.isArray(result.errors[key])
@@ -209,17 +215,24 @@ function SchoolProfilePage({ registrationData }) {
           });
           setErrors((prev) => ({ ...prev, ...apiErrors }));
         }
-        throw new Error(result.message || result.error || `Server error (${response.status}). Please try again.`);
+        throw new Error(
+          result.message ||
+            result.error ||
+            `Server error (${response.status}). Please try again.`,
+        );
       }
 
-      setApiSuccess(result.message || 'School profile saved successfully!');
+      setApiSuccess(result.message || "School profile saved successfully!");
 
-      localStorage.setItem('profileCompleted', 'true');
-      navigate('/dashboard', { replace: true });
+      localStorage.setItem("profileCompleted", "true");
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error('Error submitting profile:', error);
-      setApiError(error.message || 'An unexpected error occurred. Please check the console for details.');
+      console.error("Error submitting profile:", error);
+      setApiError(
+        error.message ||
+          "An unexpected error occurred. Please check the console for details.",
+      );
     } finally {
       setLoading(false);
     }
@@ -230,25 +243,44 @@ function SchoolProfilePage({ registrationData }) {
       <CssBaseline />
       <Box className="App">
         <Container maxWidth="md">
-          <Paper elevation={6} className="login-card" sx={{ p: 3, borderRadius: 2 }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Paper
+            elevation={6}
+            className="login-card"
+            sx={{ p: 3, borderRadius: 2 }}
+          >
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              mb={2}
+            >
               <Box>
                 <Typography variant="h5" fontWeight={700}>
                   Complete Your School Profile
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Please provide the required information to complete your school profile.
+                  Please provide the required information to complete your
+                  school profile.
                 </Typography>
               </Box>
               <Box sx={{ width: 180 }}>
                 <Typography variant="caption" color="text.secondary">
                   60% Complete
                 </Typography>
-                <LinearProgress variant="determinate" value={60} sx={{ mt: 0.5 }} />
+                <LinearProgress
+                  variant="determinate"
+                  value={60}
+                  sx={{ mt: 0.5 }}
+                />
               </Box>
             </Box>
 
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+            <Box
+              component="form"
+              noValidate
+              onSubmit={handleSubmit}
+              sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}
+            >
               {apiError && (
                 <Alert severity="error" sx={{ mb: 1 }}>
                   {apiError}
@@ -277,7 +309,11 @@ function SchoolProfilePage({ registrationData }) {
                   error={!!errors.registrationNumber}
                   helperText={errors.registrationNumber}
                 />
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={2}
+                  alignItems="center"
+                >
                   <Typography variant="body2" sx={{ minWidth: 170 }}>
                     Medium of Instruction
                   </Typography>
@@ -303,11 +339,18 @@ function SchoolProfilePage({ registrationData }) {
                   error={!!errors.yearEstablished}
                   helperText={errors.yearEstablished}
                 />
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={2}
+                  alignItems="center"
+                >
                   <Typography variant="body2" sx={{ minWidth: 170 }}>
                     School Logo
                   </Typography>
-                  <Button variant="outlined" onClick={() => logoInput.current?.click()}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => logoInput.current?.click()}
+                  >
                     Upload Logo
                   </Button>
                   <input
@@ -315,10 +358,10 @@ function SchoolProfilePage({ registrationData }) {
                     accept="image/*"
                     hidden
                     ref={logoInput}
-                    onChange={(e) => handleFileChange('logo', e)}
+                    onChange={(e) => handleFileChange("logo", e)}
                   />
                   <Typography variant="body2" color="text.secondary">
-                    {files.logo || 'No file chosen'}
+                    {files.logo || "No file chosen"}
                   </Typography>
                 </Stack>
               </Section>
@@ -350,7 +393,11 @@ function SchoolProfilePage({ registrationData }) {
                   error={!!errors.schoolTimings}
                   helperText={errors.schoolTimings}
                 />
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={2}
+                  alignItems="center"
+                >
                   <Typography variant="body2" sx={{ minWidth: 170 }}>
                     Grading System
                   </Typography>
@@ -368,19 +415,35 @@ function SchoolProfilePage({ registrationData }) {
               </Section>
 
               <Section title="Infrastructure & Facilities">
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
-                  <FormControlLabel control={<Checkbox name="labs" />} label="Laboratories" />
-                  <FormControlLabel control={<Checkbox name="transport" />} label="Transport Facility" />
-                  <FormControlLabel control={<Checkbox name="hostel" />} label="Hostel Facility" />
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={3}>
+                  <FormControlLabel
+                    control={<Checkbox name="labs" />}
+                    label="Laboratories"
+                  />
+                  <FormControlLabel
+                    control={<Checkbox name="transport" />}
+                    label="Transport Facility"
+                  />
+                  <FormControlLabel
+                    control={<Checkbox name="hostel" />}
+                    label="Hostel Facility"
+                  />
                 </Stack>
               </Section>
 
               <Section title="Documents">
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={2}
+                  alignItems="center"
+                >
                   <Typography variant="body2" sx={{ minWidth: 180 }}>
                     Registration Certificate
                   </Typography>
-                  <Button variant="outlined" onClick={() => regCertInput.current?.click()}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => regCertInput.current?.click()}
+                  >
                     Upload
                   </Button>
                   <input
@@ -388,17 +451,26 @@ function SchoolProfilePage({ registrationData }) {
                     accept=".pdf,.jpg,.png"
                     hidden
                     ref={regCertInput}
-                    onChange={(e) => handleFileChange('regCert', e)}
+                    onChange={(e) => handleFileChange("regCert", e)}
                   />
                   <Typography variant="body2" color="text.secondary">
-                    {files.regCert ? `Uploaded: ${files.regCert}` : 'No file chosen'}
+                    {files.regCert
+                      ? `Uploaded: ${files.regCert}`
+                      : "No file chosen"}
                   </Typography>
                 </Stack>
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={2}
+                  alignItems="center"
+                >
                   <Typography variant="body2" sx={{ minWidth: 180 }}>
                     Board Affiliation Certificate
                   </Typography>
-                  <Button variant="outlined" onClick={() => boardCertInput.current?.click()}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => boardCertInput.current?.click()}
+                  >
                     Upload
                   </Button>
                   <input
@@ -406,16 +478,22 @@ function SchoolProfilePage({ registrationData }) {
                     accept=".pdf,.jpg,.png"
                     hidden
                     ref={boardCertInput}
-                    onChange={(e) => handleFileChange('boardCert', e)}
+                    onChange={(e) => handleFileChange("boardCert", e)}
                   />
                   <Typography variant="body2" color="text.secondary">
-                    {files.boardCert ? `Uploaded: ${files.boardCert}` : 'No file chosen'}
+                    {files.boardCert
+                      ? `Uploaded: ${files.boardCert}`
+                      : "No file chosen"}
                   </Typography>
                 </Stack>
               </Section>
 
               <Section title="System Configuration">
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={2}
+                  alignItems="center"
+                >
                   <Typography variant="body2" sx={{ minWidth: 170 }}>
                     Attendance Mode
                   </Typography>
@@ -431,7 +509,11 @@ function SchoolProfilePage({ registrationData }) {
                     <ToggleButton value="Biometric">Biometric</ToggleButton>
                   </ToggleButtonGroup>
                 </Stack>
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={2}
+                  alignItems="center"
+                >
                   <Typography variant="body2" sx={{ minWidth: 170 }}>
                     Notifications
                   </Typography>
@@ -446,17 +528,31 @@ function SchoolProfilePage({ registrationData }) {
                     <ToggleButton value="SMS">SMS</ToggleButton>
                   </ToggleButtonGroup>
                 </Stack>
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={2}
+                  alignItems="center"
+                >
                   <Typography variant="body2" sx={{ minWidth: 170 }}>
                     Modules Enabled
                   </Typography>
                   <Stack direction="row" spacing={2}>
                     <FormControlLabel
-                      control={<Checkbox checked={modules.exams} onChange={handleModuleToggle('exams')} />}
+                      control={
+                        <Checkbox
+                          checked={modules.exams}
+                          onChange={handleModuleToggle("exams")}
+                        />
+                      }
                       label="Exams Module"
                     />
                     <FormControlLabel
-                      control={<Checkbox checked={modules.homework} onChange={handleModuleToggle('homework')} />}
+                      control={
+                        <Checkbox
+                          checked={modules.homework}
+                          onChange={handleModuleToggle("homework")}
+                        />
+                      }
                       label="Homework Module"
                     />
                   </Stack>
@@ -464,8 +560,17 @@ function SchoolProfilePage({ registrationData }) {
               </Section>
 
               <Box display="flex" justifyContent="flex-end">
-                <Button type="submit" variant="contained" size="large" disabled={loading}>
-                  {loading ? <CircularProgress size={24} color="inherit" /> : 'Save & Continue'}
+                <Button
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <CircularProgress size={24} color="inherit" />
+                  ) : (
+                    "Save & Continue"
+                  )}
                 </Button>
               </Box>
             </Box>
@@ -477,4 +582,3 @@ function SchoolProfilePage({ registrationData }) {
 }
 
 export default SchoolProfilePage;
-

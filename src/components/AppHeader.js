@@ -1,13 +1,13 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 function AppHeader() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate('/login', { replace: true });
+    navigate("/login", { replace: true });
   };
 
   return (
