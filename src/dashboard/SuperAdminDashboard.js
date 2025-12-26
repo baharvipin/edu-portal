@@ -32,16 +32,45 @@ function SuperAdminDashboard() {
   const [schools, setSchools] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    // Fetch pending school profiles
-    // fetch
-    //   .get('/api/schools/pending') // Backend API: returns schools with status PROFILE_SUBMITTED
-    //   .then((res) => setSchools(res.data))
-    //   .catch((err) => console.error(err));
+   useEffect(() => {
+    const fetchSchools = async () => {
+      try {
+        const token = localStorage.getItem("authToken"); // SUPER_ADMIN JWT
+console.log("Fetching schools with token:", token);
+        const response = await fetch(
+          "http://localhost:4000/api/superadmin/schools",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch schools");
+        }
+
+        const result = await response.json();
+        setSchools(result.data); // backend returns { count, data }
+      } catch (err) {
+        console.error(err);
+        setError("Unable to load schools");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSchools();
   }, []);
 
+
   const handleView = (school) => {
+    console.log("Viewing school:", school);
     setSelectedSchool(school);
     setModalOpen(true);
   };
@@ -70,6 +99,67 @@ function SuperAdminDashboard() {
       console.error(err);
     }
   };
+  const handleSuspend = async (schoolId) => {
+    try {
+      await fetch.post(`/api/schools/${schoolId}/suspend`);
+      const updatedSchools = schools.map((s) =>
+        s.id === schoolId ? { ...s, status: "SUSPENDED" } : s
+      );
+      setSchools(updatedSchools);
+      handleClose();
+    }
+    catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDeactivate = async (schoolId) => {  
+    try {
+      await fetch.post(`/api/schools/${schoolId}/deactivate`);
+      const updatedSchools = schools.map((s) =>
+        s.id === schoolId ? { ...s, status: "INACTIVE" } : s
+      );
+      setSchools(updatedSchools);
+      handleClose();
+    } catch (err) {
+      console.error(err);
+    } 
+  };
+  const handleActivate = async (schoolId) => {
+    try {
+      await fetch.post(`/api/schools/${schoolId}/activate`);  
+      const updatedSchools = schools.map((s) =>
+        s.id === schoolId ? { ...s, status: "ACTIVE" } : s
+      );
+      setSchools(updatedSchools);
+      handleClose();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+     
+  const getAllowedActions = (status) => {
+  switch (status) {
+    case "PROFILE_SUBMITTED":
+      return ["APPROVE", "REJECT"];
+
+    case "ACTIVE":
+      return ["SUSPEND", "DEACTIVATE"];
+
+    case "INACTIVE":
+      return ["ACTIVATE"];
+
+    case "SUSPENDED":
+      return ["REACTIVATE"];
+
+    default:
+      return [];
+  }
+};
+
+
+if (loading) return <p>Loading schools...</p>;
+if (error) return <p>{error}</p>;
 
   return (
     <Container sx={{ mt: 4 }}>
@@ -78,7 +168,7 @@ function SuperAdminDashboard() {
       </Typography>
 
       <Paper sx={{ p: 2, mb: 4 }}>
-        <Typography variant="h6">Pending School Registrations</Typography>
+        <Typography variant="h6">School Registrations List</Typography>
         <TableContainer>
           <Table>
             <TableHead>
@@ -118,26 +208,83 @@ function SuperAdminDashboard() {
               </Typography>
 
               <Stack spacing={1} mb={2}>
-                <Typography><strong>Address:</strong> {selectedSchool.fullAddress}</Typography>
-                <Typography><strong>Registration Number:</strong> {selectedSchool.registrationNumber}</Typography>
-                <Typography><strong>Medium:</strong> {selectedSchool.medium}</Typography>
-                <Typography><strong>Year Established:</strong> {selectedSchool.yearEstablished}</Typography>
-                <Typography><strong>Academic Year:</strong> {selectedSchool.academicYear}</Typography>
-                <Typography><strong>School Timings:</strong> {selectedSchool.schoolTimings}</Typography>
-                <Typography><strong>Grading System:</strong> {selectedSchool.gradingSystem}</Typography>
-                <Typography><strong>Attendance Mode:</strong> {selectedSchool.attendanceMode}</Typography>
-                <Typography><strong>Notification Mode:</strong> {selectedSchool.notificationMode}</Typography>
-                <Typography><strong>Modules:</strong> Exams({selectedSchool.examsModuleEnabled ? 'Yes' : 'No'}), Homework({selectedSchool.homeworkModuleEnabled ? 'Yes' : 'No'})</Typography>
+                <Typography><strong>Address:</strong> {selectedSchool?.profile?.fullAddress ?? ""}</Typography>
+                <Typography><strong>Registration Number:</strong> {selectedSchool?.profile?.registrationNumber ?? ""}</Typography>
+                <Typography><strong>Medium:</strong> {selectedSchool?.profile?.medium ?? ""}</Typography>
+                <Typography><strong>Year Established:</strong> {selectedSchool?.profile?.yearEstablished ?? ""}</Typography>
+                <Typography><strong>Academic Year:</strong> {selectedSchool?.profile?.academicYear ?? ""}</Typography>
+                <Typography><strong>School Timings:</strong> {selectedSchool?.profile?.schoolTimings ?? ""}</Typography>
+                <Typography><strong>Grading System:</strong> {selectedSchool?.profile?.gradingSystem ?? ""}</Typography>
+                <Typography><strong>Attendance Mode:</strong> {selectedSchool?.profile?.attendanceMode ?? ""}</Typography>
+                <Typography><strong>Notification Mode:</strong> {selectedSchool?.profile?.notificationMode ?? ""}</Typography>
+                <Typography><strong>Modules:</strong> Exams({selectedSchool?.profile?.examsModuleEnabled ? 'Yes' : 'No'}), Homework({selectedSchool?.profile?.homeworkModuleEnabled ? 'Yes' : 'No'})</Typography>
               </Stack>
 
-              <Stack direction="row" spacing={2} justifyContent="flex-end">
-                <Button variant="contained" color="success" onClick={() => handleApprove(selectedSchool.id)}>
-                  Approve
-                </Button>
-                <Button variant="outlined" color="error" onClick={() => handleReject(selectedSchool.id)}>
-                  Reject
-                </Button>
-              </Stack>
+             <Stack direction="row" spacing={2} justifyContent="flex-end">
+          {getAllowedActions(selectedSchool.status).includes("APPROVE") && (
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => handleApprove(selectedSchool.id)}
+            >
+              Approve
+            </Button>
+          )}
+
+          {getAllowedActions(selectedSchool.status).includes("REJECT") && (
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => handleReject(selectedSchool.id)}
+            >
+              Reject
+            </Button>
+          )}
+
+          {getAllowedActions(selectedSchool.status).includes("SUSPEND") && (
+            <Button
+              variant="outlined"
+              color="warning"
+              onClick={() => handleSuspend(selectedSchool.id)}
+            >
+              Suspend
+            </Button>
+          )}
+
+          {getAllowedActions(selectedSchool.status).includes("DEACTIVATE") && (
+            <Button
+              variant="outlined"
+              onClick={() => handleDeactivate(selectedSchool.id)}
+            >
+              Deactivate
+            </Button>
+          )}
+
+          {getAllowedActions(selectedSchool.status).includes("ACTIVATE") && (
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => handleActivate(selectedSchool.id)}
+            >
+              Activate
+            </Button>
+          )}
+
+          {getAllowedActions(selectedSchool.status).includes("REACTIVATE") && (
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => handleActivate(selectedSchool.id)}
+            >
+              Reactivate
+            </Button>
+          )}
+
+          <Button variant="text" onClick={handleClose}>
+            Close
+          </Button>
+        </Stack>
+              
             </>
           )}
         </Box>
