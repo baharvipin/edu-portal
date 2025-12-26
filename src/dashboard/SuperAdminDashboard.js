@@ -39,9 +39,9 @@ function SuperAdminDashboard() {
     const fetchSchools = async () => {
       try {
         const token = localStorage.getItem("authToken"); // SUPER_ADMIN JWT
-console.log("Fetching schools with token:", token);
+console.log("Fetching schools with token:", process.env.REACT_APP_API_BASE_URL);
         const response = await fetch(
-          "http://localhost:4000/api/superadmin/schools",
+          `${process.env.REACT_APP_API_BASE_URL}/api/superadmin/schools`,
           {
             method: "GET",
             headers: {
@@ -84,7 +84,7 @@ console.log("Fetching schools with token:", token);
     try {
        setLoading(true);
       const token = localStorage.getItem("authToken"); // SUPER_ADMIN JWT
-      const response = await fetch(`http://localhost:4000/api/superadmin/schools/${schoolId}/approve`, {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/superadmin/schools/${schoolId}/approve`, {
   method: "PATCH",
   headers: {
     "Content-Type": "application/json",
@@ -95,8 +95,7 @@ const data = await response.json();
 
 if (!response.ok) {
   throw new Error(data.message || "Approval failed. Please try again.");
-}
- const result = await response.json();
+} 
 
      const updatedSchools = schools.map((s) =>
         s.id === schoolId ? { ...s, status: "ACTIVE" } : s
@@ -120,19 +119,47 @@ if (!response.ok) {
       console.error(err);
     }
   };
+
   const handleSuspend = async (schoolId) => {
-    try {
-      await fetch.post(`/api/schools/${schoolId}/suspend`);
-      const updatedSchools = schools.map((s) =>
+  try {
+    setLoading(true);
+
+    const token = localStorage.getItem("authToken");
+
+    const response = await fetch(
+      `${process.env.REACT_APP_API_BASE_URL}/api/superadmin/schools/${schoolId}/suspend`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          reason: "Policy violation", // optional
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Suspend failed");
+    }
+
+    setSchools((prev) =>
+      prev.map((s) =>
         s.id === schoolId ? { ...s, status: "SUSPENDED" } : s
-      );
-      setSchools(updatedSchools);
-      handleClose();
-    }
-    catch (err) {
-      console.error(err);
-    }
-  };
+      )
+    );
+
+    handleClose();
+  } catch (err) {
+    console.error("Suspend error:", err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleDeactivate = async (schoolId) => {  
     try {
@@ -275,7 +302,7 @@ if (error) return <p>{error}</p>;
               color="success"
               onClick={() => handleApprove(selectedSchool.id)}
             >
-              Activate
+              Approve
             </Button>
           )}
 
@@ -285,7 +312,7 @@ if (error) return <p>{error}</p>;
               color="success"
               onClick={() => handleApprove(selectedSchool.id)}
             >
-              Reactivate
+              Re-Approve
             </Button>
           )}
 
