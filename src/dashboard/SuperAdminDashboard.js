@@ -161,18 +161,44 @@ if (!response.ok) {
 };
 
 
-  const handleDeactivate = async (schoolId) => {  
-    try {
-      await fetch.post(`/api/schools/${schoolId}/deactivate`);
-      const updatedSchools = schools.map((s) =>
-        s.id === schoolId ? { ...s, status: "INACTIVE" } : s
-      );
-      setSchools(updatedSchools);
-      handleClose();
-    } catch (err) {
-      console.error(err);
-    } 
-  };
+  const handleDeactivate = async (schoolId) => {
+  try {
+    setLoading(true); // optional, if you have a loading state
+
+    const token = localStorage.getItem("authToken"); // SUPER_ADMIN JWT
+
+    const response = await fetch(
+      `${process.env.REACT_APP_API_BASE_URL}/api/superadmin/schools/${schoolId}/deactivate`,
+      {
+        method: "PATCH", // PATCH is correct for updating status
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Deactivation failed. Please try again.");
+    }
+
+    // Update local state
+    const updatedSchools = schools.map((s) =>
+      s.id === schoolId ? { ...s, status: "INACTIVE" } : s
+    );
+    setSchools(updatedSchools);
+
+    handleClose(); // close modal
+  } catch (err) {
+    console.error(err);
+    alert(err.message || "Something went wrong while deactivating the school.");
+  } finally {
+    setLoading(false);
+  }
+};
+
      
   const getAllowedActions = (status) => {
   switch (status) {
