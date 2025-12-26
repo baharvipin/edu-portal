@@ -42,6 +42,10 @@ export const useAuthRedirect = () => {
         navigate("/account/deactivated", { replace: true });
         return;
       }
+      if (status === "REJECTED") {
+        navigate("/school/rejected", { replace: true });
+        return;
+      }
     }
   }, [navigate]);
 };

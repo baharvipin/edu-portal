@@ -8,7 +8,6 @@ import {
   Container,
   CssBaseline,
   FormControlLabel,
-  FormHelperText,
   Link,
   Paper,
   Stack,
@@ -154,26 +153,30 @@ function LoginPage() {
         navigate("/account/deactivated", { replace: true });
         return;
       }
+      if (data.school?.status === "REJECTED") {
+        navigate("/school/rejected", { replace: true });
+        return;
+      }
 
-      if (data.user.userRole == "SUPER_ADMIN") {
+      if (data.user.userRole === "SUPER_ADMIN") {
         localStorage.setItem("userRole", data.user.userRole);
         navigate("/superadmin/profile", { replace: true });
       } else if (
-        data.user.userRole == "ADMIN" &&
+        data.user.userRole === "ADMIN" &&
         data.school.status === "PROFILE_INCOMPLETE"
       ) {
         localStorage.setItem("userRole", data.user.userRole);
         localStorage.setItem("status", data.school.status);
         navigate("/school/profile", { replace: true });
       } else if (
-        data.user.userRole == "ADMIN" &&
+        data.user.userRole === "ADMIN" &&
         data.school.status === "PROFILE_SUBMITTED"
       ) {
         localStorage.setItem("userRole", data.user.userRole);
         localStorage.setItem("status", data.school.status);
         navigate("/dashboard", { replace: true });
       } else if (
-        data.user.userRole == "ADMIN" &&
+        data.user.userRole === "ADMIN" &&
         data.school.status === "ACTIVE"
       ) {
         // TODO handle other roles or default case

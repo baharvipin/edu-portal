@@ -15,8 +15,6 @@ import {
   Modal,
   Stack,
 } from "@mui/material";
-import { parseJwt } from "../utility/commonTask";
-import { useNavigate } from "react-router-dom";
 
 const modalStyle = {
   position: "absolute",
@@ -36,7 +34,6 @@ function SuperAdminDashboard() {
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
   useEffect(() => {
     const fetchSchools = async () => {
       try {
@@ -117,11 +114,40 @@ function SuperAdminDashboard() {
 
   const handleReject = async (schoolId) => {
     try {
-      await fetch.post(`/api/schools/${schoolId}/reject`);
-      setSchools(schools.filter((s) => s.id !== schoolId));
+      setLoading(true);
+
+      const token = localStorage.getItem("authToken");
+
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/superadmin/schools/${schoolId}/reject`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            reason: "Incomplete or invalid school details", // optional
+          }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Reject failed");
+      }
+
+      // Update UI state
+      setSchools((prev) =>
+        prev.map((s) => (s.id === schoolId ? { ...s, status: "REJECTED" } : s)),
+      );
+
       handleClose();
     } catch (err) {
-      console.error(err);
+      console.error("Reject error:", err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -207,24 +233,36 @@ function SuperAdminDashboard() {
     }
   };
 
-  const getAllowedActions = (status) => {
-    switch (status) {
-      case "PROFILE_SUBMITTED":
-        return ["APPROVE", "REJECT"];
-
-      case "ACTIVE":
-        return ["SUSPEND", "DEACTIVATE"];
-
-      case "INACTIVE":
-        return ["ACTIVATE"];
-
-      case "SUSPENDED":
-        return ["REACTIVATE"];
-
-      default:
-        return [];
-    }
+  const actionsByStatus = {
+    PROFILE_SUBMITTED: ["APPROVE", "REJECT"],
+    PROFILE_INCOMPLETE: ["APPROVE", "REJECT"],
+    ACTIVE: ["SUSPEND", "DEACTIVATE"],
+    SUSPENDED: ["ACTIVATE", "DEACTIVATE"],
+    INACTIVE: ["ACTIVATE"],
   };
+
+  const getAllowedActions = (status) => actionsByStatus[status] ?? [];
+
+  // const getAllowedActions = (status) => {
+
+  //   switch (status) {
+  //     case "PROFILE_SUBMITTED":
+  //     case "PROFILE_INCOMPLETE":
+  //       return ["APPROVE", "REJECT"];
+
+  //     case "ACTIVE":
+  //       return ["SUSPEND", "DEACTIVATE"];
+
+  //     case "INACTIVE":
+  //       return ["ACTIVATE"];
+
+  //     case "SUSPENDED":
+  //       return ["REACTIVATE"];
+
+  //     default:
+  //       return [];
+  //   }
+  // };
 
   if (loading) return <p>Loading schools...</p>;
   if (error) return <p>{error}</p>;

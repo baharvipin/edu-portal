@@ -14,6 +14,7 @@ const SuperAdminDashboard = lazy(
 );
 const SuspendedAccount = lazy(() => import("../account/SuspendedAccount"));
 const AccountDeactivated = lazy(() => import("../account/AccountDeactivated"));
+const SchoolRejected = lazy(() => import("../account/SchoolRejected"));
 
 function ProtectedRoute({ children }) {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -25,29 +26,29 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
-function ProfileRoute() {
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-  const profileCompleted = localStorage.getItem("profileCompleted") === "true";
-  const status = localStorage.getItem("status");
-  const userRole = localStorage.getItem("userRole");
-  alert("userRole:" + userRole);
-  if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
-  }
-  if (userRole === "SUPER_ADMIN") {
-    return <Navigate to="/superadmin/profile" replace />;
-  }
-  if (userRole == "ADMIN" && status === "PROFILE_SUBMITTED") {
-    return <Navigate to="/dashboard" replace />;
-  }
-  if (userRole == "ADMIN" && status === "PROFILE_INCOMPLETE") {
-    return <Navigate to="/school/profile" replace />;
-  }
+// function ProfileRoute() {
+//   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+//   const profileCompleted = localStorage.getItem("profileCompleted") === "true";
+//   const status = localStorage.getItem("status");
+//   const userRole = localStorage.getItem("userRole");
+//   alert("userRole:" + userRole);
+//   if (!isLoggedIn) {
+//     return <Navigate to="/login" replace />;
+//   }
+//   if (userRole === "SUPER_ADMIN") {
+//     return <Navigate to="/superadmin/profile" replace />;
+//   }
+//   if (userRole == "ADMIN" && status === "PROFILE_SUBMITTED") {
+//     return <Navigate to="/dashboard" replace />;
+//   }
+//   if (userRole == "ADMIN" && status === "PROFILE_INCOMPLETE") {
+//     return <Navigate to="/school/profile" replace />;
+//   }
 
-  if (profileCompleted) {
-    return <Navigate to="/dashboard" replace />;
-  }
-}
+//   if (profileCompleted) {
+//     return <Navigate to="/dashboard" replace />;
+//   }
+// }
 
 function AppRoutes() {
   return (
@@ -75,6 +76,14 @@ function AppRoutes() {
         element={
           <Suspense fallback={<div>Loading...</div>}>
             <AccountDeactivated />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/school/rejected"
+        element={
+          <Suspense fallback={<div>Loading...</div>}>
+            <SchoolRejected />
           </Suspense>
         }
       />
