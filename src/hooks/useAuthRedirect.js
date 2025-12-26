@@ -27,11 +27,16 @@ export const useAuthRedirect = () => {
         navigate("/school/profile", { replace: true });
         return;
       }
-
-      if (status === "PROFILE_SUBMITTED" || status === "ACTIVE") {
-        navigate("/dashboard", { replace: true });
+      if (status === "PROFILE_SUBMITTED") {
+        navigate("/school/pending-approval", { replace: true });
         return;
       }
+
+      if ( status === "ACTIVE") {
+        navigate("/dashboard", { replace: true });
+        return;
+      } 
+      
 
       if (status === "SUSPENDED") {
         navigate("/account/suspended", { replace: true });

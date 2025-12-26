@@ -15,6 +15,9 @@ const SuperAdminDashboard = lazy(
 const SuspendedAccount = lazy(() => import("../account/SuspendedAccount"));
 const AccountDeactivated = lazy(() => import("../account/AccountDeactivated"));
 const SchoolRejected = lazy(() => import("../account/SchoolRejected"));
+const SchoolPendingApproval = lazy(
+  () => import("../account/SchoolPendingApproval"),
+);
 
 function ProtectedRoute({ children }) {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -87,7 +90,14 @@ function AppRoutes() {
           </Suspense>
         }
       />
-
+     <Route
+        path="/school/pending-approval"
+        element={
+          <Suspense fallback={<div>Loading...</div>}>
+            <SchoolPendingApproval />
+          </Suspense>
+        }
+      /> 
       <Route
         path="/register"
         element={

@@ -118,7 +118,6 @@ function LoginPage() {
       // Temporary log for debugging; remove in production
       // eslint-disable-next-line no-console
       console.log("Login response data:", data);
-      console.log("Login response data:", data);
       if (!response.ok) {
         if (data.errors && typeof data.errors === "object") {
           const apiErrors = {};
@@ -144,44 +143,99 @@ function LoginPage() {
           data.profileCompleted ? "true" : "false",
         );
       }
-      if (data.school?.status === "SUSPENDED") {
-        navigate("/account/suspended", { replace: true });
-        return;
-      }
+      // Redirect based on user role and status
+    const { user, school } = data;
 
-      if (data.school?.status === "DEACTIVATED") {
-        navigate("/account/deactivated", { replace: true });
-        return;
-      }
-      if (data.school?.status === "REJECTED") {
-        navigate("/school/rejected", { replace: true });
-        return;
-      }
+// Handle blocked school states first
+if (school?.status === "SUSPENDED") {
+  navigate("/account/suspended", { replace: true });
+  return;
+}
 
-      if (data.user.userRole === "SUPER_ADMIN") {
-        localStorage.setItem("userRole", data.user.userRole);
-        navigate("/superadmin/profile", { replace: true });
-      } else if (
-        data.user.userRole === "ADMIN" &&
-        data.school.status === "PROFILE_INCOMPLETE"
-      ) {
-        localStorage.setItem("userRole", data.user.userRole);
-        localStorage.setItem("status", data.school.status);
-        navigate("/school/profile", { replace: true });
-      } else if (
-        data.user.userRole === "ADMIN" &&
-        data.school.status === "PROFILE_SUBMITTED"
-      ) {
-        localStorage.setItem("userRole", data.user.userRole);
-        localStorage.setItem("status", data.school.status);
-        navigate("/dashboard", { replace: true });
-      } else if (
-        data.user.userRole === "ADMIN" &&
-        data.school.status === "ACTIVE"
-      ) {
-        // TODO handle other roles or default case
-        navigate("/dashboard", { replace: true });
-      }
+if (school?.status === "DEACTIVATED") {
+  navigate("/account/deactivated", { replace: true });
+  return;
+}
+
+if (school?.status === "REJECTED") {
+  navigate("/school/rejected", { replace: true });
+  return;
+}
+
+// Store common values once
+localStorage.setItem("userRole", user.userRole);
+if (school?.status) {
+  localStorage.setItem("status", school.status);
+}
+
+// Role-based routing
+if (user.userRole === "SUPER_ADMIN") {
+  navigate("/superadmin/profile", { replace: true });
+  return;
+}
+
+if (user.userRole === "ADMIN") {
+  switch (school.status) {
+    case "PROFILE_INCOMPLETE":
+      navigate("/school/profile", { replace: true });
+      break;
+
+    case "PROFILE_SUBMITTED":
+      navigate("/school/pending-approval", { replace: true });
+      break;
+
+    case "ACTIVE":
+      navigate("/dashboard", { replace: true });
+      break;
+
+    default:
+      navigate("/login", { replace: true });
+  }
+}
+
+
+
+
+      // if (data.school?.status === "SUSPENDED") {
+      //   navigate("/account/suspended", { replace: true });
+      //   return;
+      // }
+
+      // if (data.school?.status === "DEACTIVATED") {
+      //   navigate("/account/deactivated", { replace: true });
+      //   return;
+      // }
+      // if (data.school?.status === "REJECTED") {
+      //   navigate("/school/rejected", { replace: true });
+      //   return;
+      // }
+
+      // if (data.user.userRole === "SUPER_ADMIN") {
+      //   localStorage.setItem("userRole", data.user.userRole);
+      //   navigate("/superadmin/profile", { replace: true });
+      // } else if (
+      //   data.user.userRole === "ADMIN" &&
+      //   data.school.status === "PROFILE_INCOMPLETE"
+      // ) {
+      //   localStorage.setItem("userRole", data.user.userRole);
+      //   localStorage.setItem("status", data.school.status);
+      //   navigate("/school/profile", { replace: true });
+      // } else if (
+      //   data.user.userRole === "ADMIN" &&
+      //   data.school.status === "PROFILE_SUBMITTED"
+      // ) {
+      //   localStorage.setItem("userRole", data.user.userRole);
+      //   localStorage.setItem("status", data.school.status);
+      //   navigate("/school/pending-approval", { replace: true });
+      // } else if (
+      //   data.user.userRole === "ADMIN" &&
+      //   data.school.status === "ACTIVE"
+      // ) {
+      //    localStorage.setItem("userRole", data.user.userRole);
+      //   localStorage.setItem("status", data.school.status);
+      //   // TODO handle other roles or default case
+      //   navigate("/dashboard", { replace: true });
+      // }
     } catch (error) {
       setApiError(error.message || "An unexpected error occurred.");
     } finally {
