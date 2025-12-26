@@ -7,6 +7,8 @@ const SchoolProfilePage = lazy(() => import('../registration/SchoolProfilePage')
 const DashboardPage = lazy(() => import('../dashboard/DashboardPage'));
 const NoPageFound = lazy(() => import('../noPageFound/NoPageFound'));
 const SuperAdminDashboard = lazy(() => import('../dashboard/SuperAdminDashboard'));
+const SuspendedAccount = lazy(() => import('../account/SuspendedAccount'));
+const AccountDeactivated = lazy(() => import('../account/AccountDeactivated'));
 
 function ProtectedRoute({ children }) {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -58,6 +60,23 @@ function AppRoutes() {
           </Suspense>
         )}
       />
+      <Route
+        path="/account/suspended"
+        element={(
+          <Suspense fallback={<div>Loading...</div>}>
+            <SuspendedAccount />
+          </Suspense>
+        )}
+      />
+      <Route
+        path="/account/deactivated"
+        element={(
+          <Suspense fallback={<div>Loading...</div>}>
+            <AccountDeactivated />
+          </Suspense>
+        )}
+      />
+      
       <Route
         path="/register"
         element={(
