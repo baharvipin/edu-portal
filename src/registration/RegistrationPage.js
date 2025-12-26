@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
   Alert,
   Box,
@@ -168,7 +169,7 @@ function RegistrationPage() {
     };
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/schools/register`, {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -187,7 +188,7 @@ function RegistrationPage() {
           });
           setErrors(apiErrors);
         }
-        throw new Error(data.message || 'Registration failed. Please try again.');
+        throw new Error(data.error || 'Registration failed. Please try again.');
       }
 
       setApiSuccess(data.message || 'School registered successfully!');
@@ -390,6 +391,11 @@ function RegistrationPage() {
                   {loading ? <CircularProgress size={24} color="inherit" /> : 'Register School'}
                 </Button>
               </Stack>
+               <Typography variant="body2" color="text.secondary" textAlign="end"> 
+                              <Link component={RouterLink} to="/login" underline="hover">
+                                Already have an account? Login Here
+                              </Link>
+                            </Typography>
             </Box>
           </Paper>
         </Container>

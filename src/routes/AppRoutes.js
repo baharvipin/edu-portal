@@ -21,24 +21,26 @@ function ProtectedRoute({ children }) {
 function ProfileRoute() {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   const profileCompleted = localStorage.getItem('profileCompleted') === 'true';
+  const status = localStorage.getItem('status');
   const userRole = localStorage.getItem('userRole');
-
+alert('userRole:'+userRole);
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
   if (userRole === 'SUPER_ADMIN') {
     return <Navigate to="/superadmin/profile" replace />;
   }
+  if (userRole == 'ADMIN' && status === 'PROFILE_SUBMITTED') {
+    return <Navigate to="/dashboard" replace />;
+  }
+    if (userRole == 'ADMIN' && status === 'PROFILE_INCOMPLETE') {
+      return <Navigate to="/school/profile" replace />;
+    }
 
   if (profileCompleted) {
     return <Navigate to="/dashboard" replace />;
   }
-
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <SchoolProfilePage />
-    </Suspense>
-  );
+ 
 }
 
 function AppRoutes() {
@@ -68,7 +70,7 @@ function AppRoutes() {
         path="/superadmin/profile"
         element={
             <Suspense fallback={<div>Loading...</div>}>
-<SuperAdminDashboard />
+                     <SuperAdminDashboard />
             </Suspense>
         
       }
@@ -76,7 +78,7 @@ function AppRoutes() {
 
       <Route
         path="/school/profile"
-        element={<ProfileRoute />}
+        element={<SchoolProfilePage />}
       />
       <Route
         path="/dashboard"

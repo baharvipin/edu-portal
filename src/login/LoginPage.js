@@ -143,17 +143,21 @@ console.log('Login response data:', data);
         );
       }
 
-      const profileCompleted =
-        localStorage.getItem('profileCompleted') === 'true';
-
-      if(data.user.userRole){ 
+      if(data.user.userRole == 'SUPER_ADMIN'){ 
         localStorage.setItem('userRole', data.user.userRole);
-        navigate(data.user.userRole === 'SUPER_ADMIN' ? '/superadmin/profile' : '/school/profile', { replace: true });
-      }
-     else if (!profileCompleted) {
+        navigate('/superadmin/profile', { replace: true });
+      }else if(data.user.userRole == 'ADMIN' && data.school.status === "PROFILE_INCOMPLETE"){
+        localStorage.setItem('userRole', data.user.userRole);
+        localStorage.setItem('status', data.school.status);
         navigate('/school/profile', { replace: true });
-      } else {
+      }
+     else if (data.user.userRole == 'ADMIN' && data.school.status === "PROFILE_SUBMITTED") {
+       localStorage.setItem('userRole', data.user.userRole);
+        localStorage.setItem('status', data.school.status);
         navigate('/dashboard', { replace: true });
+      } else {
+        // TODO handle other roles or default case
+       // navigate('/dashboard', { replace: true });
       }
     } catch (error) {
       setApiError(error.message || 'An unexpected error occurred.');

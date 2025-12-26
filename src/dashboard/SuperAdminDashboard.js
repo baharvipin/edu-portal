@@ -15,6 +15,8 @@ import {
   Modal,
   Stack,
 } from '@mui/material'; 
+import {parseJwt} from '../utility/commonTask';
+import { useNavigate } from 'react-router-dom';
 
 const modalStyle = {
   position: 'absolute',
@@ -34,12 +36,15 @@ function SuperAdminDashboard() {
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+ const navigate = useNavigate();
    useEffect(() => {
     const fetchSchools = async () => {
       try {
         const token = localStorage.getItem("authToken"); // SUPER_ADMIN JWT
-console.log("Fetching schools with token:", process.env.REACT_APP_API_BASE_URL);
+       // const user = parseJwt(token);
+      
+
+console.log("Fetching schools with token:", token);
         const response = await fetch(
           `${process.env.REACT_APP_API_BASE_URL}/api/superadmin/schools`,
           {
