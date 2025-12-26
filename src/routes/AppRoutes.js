@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import ProtectedLayout from '../components/ProtectedLayout';
 
 const LoginPage = lazy(() => import('../login/LoginPage'));
 const RegistrationPage = lazy(() => import('../registration/RegistrationPage'));
@@ -9,6 +10,7 @@ const NoPageFound = lazy(() => import('../noPageFound/NoPageFound'));
 const SuperAdminDashboard = lazy(() => import('../dashboard/SuperAdminDashboard'));
 const SuspendedAccount = lazy(() => import('../account/SuspendedAccount'));
 const AccountDeactivated = lazy(() => import('../account/AccountDeactivated'));
+
 
 function ProtectedRoute({ children }) {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -48,6 +50,7 @@ alert('userRole:'+userRole);
 function AppRoutes() {
   return (
     <Routes>
+      {/* Public Routes */}
       <Route
         path="/"
         element={<Navigate to="/login" replace />}
@@ -85,6 +88,8 @@ function AppRoutes() {
           </Suspense>
         )}
       />
+       {/* Protected Routes */}
+      <Route element={<ProtectedLayout />}>
        <Route
         path="/superadmin/profile"
         element={
@@ -109,6 +114,7 @@ function AppRoutes() {
           </ProtectedRoute>
         )}
       />
+      </Route>
       <Route
         path="*"
         element={(

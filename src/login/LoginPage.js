@@ -142,6 +142,15 @@ console.log('Login response data:', data);
           data.profileCompleted ? 'true' : 'false',
         );
       }
+       if (data.school.status === 'SUSPENDED') {
+    navigate('/account/suspended', { replace: true });
+    return;
+  }
+
+  if (data.school.status === 'DEACTIVATED') {
+    navigate('/account/deactivated', { replace: true });
+    return;
+  }
 
       if(data.user.userRole == 'SUPER_ADMIN'){ 
         localStorage.setItem('userRole', data.user.userRole);
@@ -155,9 +164,9 @@ console.log('Login response data:', data);
        localStorage.setItem('userRole', data.user.userRole);
         localStorage.setItem('status', data.school.status);
         navigate('/dashboard', { replace: true });
-      } else {
+      } else if (data.user.userRole == 'ADMIN' && data.school.status === "ACTIVE") {
         // TODO handle other roles or default case
-       // navigate('/dashboard', { replace: true });
+       navigate('/dashboard', { replace: true });
       }
     } catch (error) {
       setApiError(error.message || 'An unexpected error occurred.');
