@@ -225,6 +225,7 @@ function SchoolProfilePage({ registrationData }) {
       setApiSuccess(result.message || "School profile saved successfully!");
 
       localStorage.setItem("profileCompleted", "true");
+      localStorage.setItem("status", "PROFILE_SUBMITTED");
       navigate("/dashboard", { replace: true });
     } catch (error) {
       // eslint-disable-next-line no-console
