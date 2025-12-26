@@ -82,11 +82,32 @@ console.log("Fetching schools with token:", token);
 
   const handleApprove = async (schoolId) => {
     try {
-      await fetch.post(`/api/schools/${schoolId}/approve`);
-      setSchools(schools.filter((s) => s.id !== schoolId));
+       setLoading(true);
+      const token = localStorage.getItem("authToken"); // SUPER_ADMIN JWT
+      const response = await fetch(`http://localhost:4000/api/superadmin/schools/${schoolId}/approve`, {
+  method: "PATCH",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  },
+});
+const data = await response.json();
+
+if (!response.ok) {
+  throw new Error(data.message || "Approval failed. Please try again.");
+}
+ const result = await response.json();
+
+     const updatedSchools = schools.map((s) =>
+        s.id === schoolId ? { ...s, status: "ACTIVE" } : s
+      );
+      setSchools(updatedSchools);
       handleClose();
     } catch (err) {
       console.error(err);
+    }
+    finally {
+       setLoading(false);
     }
   };
 
@@ -124,18 +145,6 @@ console.log("Fetching schools with token:", token);
     } catch (err) {
       console.error(err);
     } 
-  };
-  const handleActivate = async (schoolId) => {
-    try {
-      await fetch.post(`/api/schools/${schoolId}/activate`);  
-      const updatedSchools = schools.map((s) =>
-        s.id === schoolId ? { ...s, status: "ACTIVE" } : s
-      );
-      setSchools(updatedSchools);
-      handleClose();
-    } catch (err) {
-      console.error(err);
-    }
   };
      
   const getAllowedActions = (status) => {
@@ -264,7 +273,7 @@ if (error) return <p>{error}</p>;
             <Button
               variant="contained"
               color="success"
-              onClick={() => handleActivate(selectedSchool.id)}
+              onClick={() => handleApprove(selectedSchool.id)}
             >
               Activate
             </Button>
@@ -274,7 +283,7 @@ if (error) return <p>{error}</p>;
             <Button
               variant="contained"
               color="success"
-              onClick={() => handleActivate(selectedSchool.id)}
+              onClick={() => handleApprove(selectedSchool.id)}
             >
               Reactivate
             </Button>
