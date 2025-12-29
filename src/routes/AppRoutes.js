@@ -18,6 +18,7 @@ const SchoolRejected = lazy(() => import("../account/SchoolRejected"));
 const SchoolPendingApproval = lazy(
   () => import("../account/SchoolPendingApproval"),
 );
+const TeachersPage = lazy(() => import("../admin/TeachersPage"));
 
 function ProtectedRoute({ children }) {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -129,6 +130,17 @@ function AppRoutes() {
           }
         />
       </Route>
+      <Route
+  path="/admin/teachers"
+  element={
+    <ProtectedRoute>
+      <Suspense fallback={<div>Loading...</div>}>
+        <TeachersPage />
+      </Suspense>
+    </ProtectedRoute>
+  }
+/>
+
       <Route
         path="*"
         element={

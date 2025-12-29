@@ -16,10 +16,10 @@ export const useAuthRedirect = () => {
     }
 
     // SUPER ADMIN
-    if (userRole === "SUPER_ADMIN") {
-      navigate("/superadmin/profile", { replace: true });
-      return;
-    }
+    // if (userRole === "SUPER_ADMIN") {
+    //   navigate("/superadmin/profile", { replace: true });
+    //   return;
+    // }
 
     // SCHOOL ADMIN
     if (userRole === "ADMIN") {
@@ -32,10 +32,10 @@ export const useAuthRedirect = () => {
         return;
       }
 
-      if ( status === "ACTIVE") {
-        navigate("/dashboard", { replace: true });
-        return;
-      } 
+      // if ( status === "ACTIVE") {
+      //   navigate("/dashboard", { replace: true });
+      //   return;
+      // } 
       
 
       if (status === "SUSPENDED") {
