@@ -144,57 +144,54 @@ function LoginPage() {
         );
       }
       // Redirect based on user role and status
-    const { user, school } = data;
+      const { user, school } = data;
 
-// Handle blocked school states first
-if (school?.status === "SUSPENDED") {
-  navigate("/account/suspended", { replace: true });
-  return;
-}
+      // Handle blocked school states first
+      if (school?.status === "SUSPENDED") {
+        navigate("/account/suspended", { replace: true });
+        return;
+      }
 
-if (school?.status === "DEACTIVATED") {
-  navigate("/account/deactivated", { replace: true });
-  return;
-}
+      if (school?.status === "DEACTIVATED") {
+        navigate("/account/deactivated", { replace: true });
+        return;
+      }
 
-if (school?.status === "REJECTED") {
-  navigate("/school/rejected", { replace: true });
-  return;
-}
+      if (school?.status === "REJECTED") {
+        navigate("/school/rejected", { replace: true });
+        return;
+      }
 
-// Store common values once
-localStorage.setItem("userRole", user.userRole);
-if (school?.status) {
-  localStorage.setItem("status", school.status);
-}
+      // Store common values once
+      localStorage.setItem("userRole", user.userRole);
+      if (school?.status) {
+        localStorage.setItem("status", school.status);
+      }
 
-// Role-based routing
-if (user.userRole === "SUPER_ADMIN") {
-  navigate("/superadmin/profile", { replace: true });
-  return;
-}
+      // Role-based routing
+      if (user.userRole === "SUPER_ADMIN") {
+        navigate("/superadmin/profile", { replace: true });
+        return;
+      }
 
-if (user.userRole === "ADMIN") {
-  switch (school.status) {
-    case "PROFILE_INCOMPLETE":
-      navigate("/school/profile", { replace: true });
-      break;
+      if (user.userRole === "ADMIN") {
+        switch (school.status) {
+          case "PROFILE_INCOMPLETE":
+            navigate("/school/profile", { replace: true });
+            break;
 
-    case "PROFILE_SUBMITTED":
-      navigate("/school/pending-approval", { replace: true });
-      break;
+          case "PROFILE_SUBMITTED":
+            navigate("/school/pending-approval", { replace: true });
+            break;
 
-    case "ACTIVE":
-      navigate("/dashboard", { replace: true });
-      break;
+          case "ACTIVE":
+            navigate("/dashboard", { replace: true });
+            break;
 
-    default:
-      navigate("/login", { replace: true });
-  }
-}
-
-
-
+          default:
+            navigate("/login", { replace: true });
+        }
+      }
 
       // if (data.school?.status === "SUSPENDED") {
       //   navigate("/account/suspended", { replace: true });

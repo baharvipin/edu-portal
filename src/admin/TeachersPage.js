@@ -37,7 +37,7 @@ const mockTeachers = [
 
 function TeachersPage() {
   const [teachers, setTeachers] = useState(mockTeachers);
-const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const handleAddTeacher = (data) => {
     console.log("Teacher Data:", data);

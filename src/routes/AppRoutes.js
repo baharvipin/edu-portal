@@ -19,6 +19,9 @@ const SchoolPendingApproval = lazy(
   () => import("../account/SchoolPendingApproval"),
 );
 const TeachersPage = lazy(() => import("../admin/TeachersPage"));
+const SubjectsPage = lazy(() => import("../admin/SubjectsPage"));
+const StudentsPage = lazy(() => import("../admin/StudentsPage"));
+const ClassWiseStudents = lazy(() => import("../admin/ClassWiseStudents"));
 
 function ProtectedRoute({ children }) {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -91,14 +94,14 @@ function AppRoutes() {
           </Suspense>
         }
       />
-     <Route
+      <Route
         path="/school/pending-approval"
         element={
           <Suspense fallback={<div>Loading...</div>}>
             <SchoolPendingApproval />
           </Suspense>
         }
-      /> 
+      />
       <Route
         path="/register"
         element={
@@ -131,16 +134,42 @@ function AppRoutes() {
         />
       </Route>
       <Route
-  path="/admin/teachers"
-  element={
-    <ProtectedRoute>
-      <Suspense fallback={<div>Loading...</div>}>
-        <TeachersPage />
-      </Suspense>
-    </ProtectedRoute>
-  }
-/>
+        path="/admin/teachers"
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<div>Loading...</div>}>
+              <TeachersPage />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
 
+      <Route
+        path="/admin/subjects"
+        element={
+          <ProtectedRoute>
+            <SubjectsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/students"
+        element={
+          <ProtectedRoute>
+            <StudentsPage />
+          </ProtectedRoute>
+        }
+      />
+
+     <Route
+        path="/admin/classes"
+        element={
+          <ProtectedRoute>
+            <ClassWiseStudents />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="*"
         element={

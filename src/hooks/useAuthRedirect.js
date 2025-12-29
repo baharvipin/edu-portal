@@ -35,8 +35,7 @@ export const useAuthRedirect = () => {
       // if ( status === "ACTIVE") {
       //   navigate("/dashboard", { replace: true });
       //   return;
-      // } 
-      
+      // }
 
       if (status === "SUSPENDED") {
         navigate("/account/suspended", { replace: true });

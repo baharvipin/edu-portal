@@ -7,7 +7,7 @@ import {
   Paper,
   Typography,
   Button,
-} from "@mui/material";  
+} from "@mui/material";
 import ClassIcon from "@mui/icons-material/Class";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
@@ -34,24 +34,15 @@ function DashboardPage() {
           {/* Overview Cards */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid item xs={12} sm={6} md={3}>
-              <DashboardCard
-                title="Teachers"
-                count="--"
-              />
+              <DashboardCard title="Teachers" count="--" />
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
-              <DashboardCard 
-                title="Students" 
-                count="--"
-              />
+              <DashboardCard title="Students" count="--" />
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
-              <DashboardCard
-                title="Subjects"
-                count="--"
-              />
+              <DashboardCard title="Subjects" count="--" />
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
