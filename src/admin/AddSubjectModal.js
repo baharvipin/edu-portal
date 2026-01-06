@@ -26,13 +26,40 @@ function AddSubjectModal({ open, onClose, onSubmit }) {
     code: "",
   });
 
+  const [errors, setErrors] = React.useState({});
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+
+    // Clear error when user types
+    setErrors({ ...errors, [e.target.name]: "" });
+  };
+
+  const validate = () => {
+    let tempErrors = {};
+
+    if (!form.name.trim()) {
+      tempErrors.name = "Subject name is required";
+    }
+
+    if (!form.code.trim()) {
+      tempErrors.code = "Subject code is required";
+    }
+
+    setErrors(tempErrors);
+
+    // valid if no error keys
+    return Object.keys(tempErrors).length === 0;
   };
 
   const handleSubmit = () => {
-    onSubmit(form);
+    if (!validate()) return; // ❌ stop API call
+
+    onSubmit(form); // ✅ API call only if valid
+
     setForm({ name: "", code: "" });
+    setErrors({});
+    onClose();
   };
 
   return (
@@ -49,6 +76,8 @@ function AddSubjectModal({ open, onClose, onSubmit }) {
             value={form.name}
             onChange={handleChange}
             fullWidth
+            error={!!errors.name}
+            helperText={errors.name}
           />
 
           <TextField
@@ -57,6 +86,8 @@ function AddSubjectModal({ open, onClose, onSubmit }) {
             value={form.code}
             onChange={handleChange}
             fullWidth
+            error={!!errors.code}
+            helperText={errors.code}
           />
         </Stack>
 

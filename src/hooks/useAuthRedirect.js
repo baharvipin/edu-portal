@@ -10,10 +10,10 @@ export const useAuthRedirect = () => {
     const status = localStorage.getItem("status");
 
     // Not logged in
-    if (!token) {
-      navigate("/login", { replace: true });
-      return;
-    }
+    // if (!token) {
+    //   navigate("/login", { replace: true });
+    //   return;
+    // }
 
     // SUPER ADMIN
     // if (userRole === "SUPER_ADMIN") {

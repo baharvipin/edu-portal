@@ -17,32 +17,33 @@ import AddIcon from "@mui/icons-material/Add";
 import AddTeacherModal from "./AddTeacherModal";
 import useFetch from "../hooks/useFetch";
 import { parseJwt } from "../utility/commonTask";
-const mockTeachers = [
-  {
-    id: 1,
-    name: "Raj Kumar",
-    email: "raj@school.com",
-    subjects: ["Math"],
-    classes: ["8-A"],
-    status: "ACTIVE",
-  },
-  {
-    id: 2,
-    name: "Anita Sharma",
-    email: "anita@school.com",
-    subjects: ["Science"],
-    classes: ["7-B"],
-    status: "INACTIVE",
-  },
-];
+ 
 
 function TeachersPage() {
-  const [teachers, setTeachers] = useState(mockTeachers);
+  const [teachers, setTeachers] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [submitPayload, setSubmitPayload] = useState(null);
   const [subjects, setSubjects] = useState([]);
   const token = localStorage.getItem("authToken");
   const tokenDetails = parseJwt(token);
+
+  const {
+  data: teachersResponse,
+  loading: teachersLoading,
+  error: teachersError,
+} = useFetch(
+  `/api/teachers/${tokenDetails.schoolId}`,
+  undefined,
+  !!tokenDetails?.schoolId
+);
+
+useEffect(()=>{
+  if(teachersResponse) {
+    console.log("teacher res", teachersResponse);
+    setTeachers(teachersResponse?.teachers?? []);
+  }
+
+}, [teachersResponse])
 
 const {
   data: subjectsResponse,
@@ -106,7 +107,6 @@ useEffect(() => {
   return (
     <Container maxWidth="lg">
       <Paper sx={{ p: 3, mt: 4 }}>
-        {/* Header */}
         <Stack direction="row" justifyContent="space-between" mb={3}>
           <Box>
             <Typography variant="h5" fontWeight={700}>
@@ -140,19 +140,19 @@ useEffect(() => {
           </TableHead>
 
           <TableBody>
-            {teachers.map((teacher) => (
+            {teachers?.map((teacher) => (
               <TableRow key={teacher.id}>
-                <TableCell>{teacher.name}</TableCell>
+                <TableCell>{teacher.fullName}</TableCell>
                 <TableCell>{teacher.email}</TableCell>
 
                 <TableCell>
-                  {teacher.subjects.map((s) => (
-                    <Chip key={s} label={s} size="small" sx={{ mr: 0.5 }} />
+                  {teacher?.subjects?.map((s) => (
+                    <Chip key={s.id} label={s.name} size="small" sx={{ mr: 0.5 }} />
                   ))}
                 </TableCell>
 
                 <TableCell>
-                  {teacher.classes.map((c) => (
+                  {teacher?.classes?.map((c) => (
                     <Chip key={c} label={c} size="small" sx={{ mr: 0.5 }} />
                   ))}
                 </TableCell>

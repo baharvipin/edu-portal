@@ -1,4 +1,4 @@
-import React from "react";
+import React , {useEffect, useState}from "react";
 import {
   Box,
   Button,
@@ -11,16 +11,69 @@ import {
   TableBody,
 } from "@mui/material";
 import AddSubjectModal from "../admin/AddSubjectModal";
+import useFetch from "../hooks/useFetch";
+import { parseJwt } from "../utility/commonTask";
 
 function SubjectsPage() {
-  const [open, setOpen] = React.useState(false);
-  const [subjects, setSubjects] = React.useState([
-    { id: 1, name: "Mathematics", code: "MATH" },
-    { id: 2, name: "Science", code: "SCI" },
-  ]);
+  const [open, setOpen] =  useState(false);
+  const [subjects, setSubjects] = useState([]);
+
+  const token = localStorage.getItem("authToken");
+  const tokenDetails = parseJwt(token);
+
+  const [submitPayload, setSubmitPayload] = useState(null);
+
+
+const {
+  data: subjectAddResponse,
+  loading,
+  error: subjectAddError,
+} = useFetch(
+  "/api/subjects/addSubject",
+  {
+    method: "POST",
+    body: submitPayload,
+  },
+  submitPayload !== null
+);
+
+useEffect(() => {
+  if (subjectAddResponse) {
+    setSubjects([...subjects, subjectAddResponse])
+    setSubmitPayload(null); // reset trigger
+  }
+}, [subjectAddResponse]);
+
+useEffect(() => {
+  if (subjectAddError) {
+    setSubmitPayload(null);
+  }
+}, [subjectAddError]);
+
+
+  const {
+    data: subjectsResponse,
+    loading: subjectsLoading,
+    error: subjectsError,
+  } = useFetch(`/api/subjects/${tokenDetails.schoolId}`,  {},
+    !!tokenDetails?.schoolId);
+  
+    useEffect(() => {
+      if(subjectsResponse) {
+        console.log("hello subject res",subjectsResponse )
+        setSubjects(subjectsResponse?.subjects ?? []);
+      }
+  
+    }, [subjectsResponse])
+
 
   const handleAddSubject = (data) => {
-    setSubjects((prev) => [...prev, { id: Date.now(), ...data }]);
+    const payload = {
+    name: data.name,
+    code: data.code,
+    schoolId: tokenDetails.schoolId
+  };
+    setSubmitPayload(payload);
     setOpen(false);
   };
 
@@ -51,8 +104,9 @@ function SubjectsPage() {
               </TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            {subjects.map((subject) => (
+         
+            <TableBody>
+            {subjects?.map((subject) => (
               <TableRow key={subject.id}>
                 <TableCell>{subject.name}</TableCell>
                 <TableCell>{subject.code}</TableCell>
@@ -64,8 +118,12 @@ function SubjectsPage() {
                 </TableCell>
               </TableRow>
             ))}
-          </TableBody>
+          </TableBody> 
+          
         </Table>
+        {
+          !subjects?.length && <h6>No recorde are found</h6>
+        }
       </Paper>
 
       <AddSubjectModal
