@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Modal,
   Box,
@@ -20,13 +20,19 @@ const modalStyle = {
   p: 4,
 };
 
-function AddSubjectModal({ open, onClose, onSubmit }) {
+function AddSubjectModal({ open, onClose, onSubmit, selectedSubject }) {
+  console.log("selectedSubject", selectedSubject)
   const [form, setForm] = React.useState({
-    name: "",
-    code: "",
+    name:  "",
+    code:  "",
   });
 
+
   const [errors, setErrors] = React.useState({});
+
+  useEffect(() => {
+    setForm(selectedSubject)
+  }, [selectedSubject])
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

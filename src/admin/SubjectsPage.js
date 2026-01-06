@@ -17,11 +17,25 @@ import { parseJwt } from "../utility/commonTask";
 function SubjectsPage() {
   const [open, setOpen] =  useState(false);
   const [subjects, setSubjects] = useState([]);
-
+  const [selectedSubject, setSelectedSubject] = React.useState({});
   const token = localStorage.getItem("authToken");
   const tokenDetails = parseJwt(token);
 
   const [submitPayload, setSubmitPayload] = useState(null);
+  const [submitPayloadEdit, setSubmitPayloadEdit] = useState(null);
+
+  const {
+  data: subjectEditResponse,
+  loading: subjectEditLoading,
+  error: subjectEditError,
+} = useFetch(
+  `/api/subjects/${selectedSubject.id}`,
+  {
+    method: "PUT",
+    body: submitPayloadEdit,
+  },
+  submitPayloadEdit !== null
+);
 
 
 const {
@@ -43,6 +57,14 @@ useEffect(() => {
     setSubmitPayload(null); // reset trigger
   }
 }, [subjectAddResponse]);
+
+useEffect(() => {
+  if(subjectEditResponse) {
+    //setSubjects([])
+    setSubmitPayloadEdit(null);
+  }
+
+}, [subjectEditResponse, selectedSubject])
 
 useEffect(() => {
   if (subjectAddError) {
@@ -73,9 +95,23 @@ useEffect(() => {
     code: data.code,
     schoolId: tokenDetails.schoolId
   };
+  
+  if(data.id){
+    payload.id = data.id 
+    setSubmitPayloadEdit(payload);
+  }else{
     setSubmitPayload(payload);
+  }
+    
     setOpen(false);
   };
+
+  
+
+const handleEditClick = (subject) => {
+  setSelectedSubject(subject);
+  setOpen(true);
+};
 
   return (
     <Box p={3}>
@@ -111,7 +147,7 @@ useEffect(() => {
                 <TableCell>{subject.name}</TableCell>
                 <TableCell>{subject.code}</TableCell>
                 <TableCell>
-                  <Button size="small">Edit</Button>
+                  <Button size="small" onClick={() => handleEditClick(subject)}>Edit</Button>
                   <Button size="small" color="error">
                     Delete
                   </Button>
@@ -128,8 +164,9 @@ useEffect(() => {
 
       <AddSubjectModal
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={() => {setOpen(false) }}
         onSubmit={handleAddSubject}
+        selectedSubject={selectedSubject}
       />
     </Box>
   );
