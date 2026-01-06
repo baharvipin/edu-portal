@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -16,6 +16,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import AddTeacherModal from "./AddTeacherModal";
 import useFetch from "../hooks/useFetch";
+import { parseJwt } from "../utility/commonTask";
 const mockTeachers = [
   {
     id: 1,
@@ -38,10 +39,68 @@ const mockTeachers = [
 function TeachersPage() {
   const [teachers, setTeachers] = useState(mockTeachers);
   const [open, setOpen] = React.useState(false);
+  const [submitPayload, setSubmitPayload] = useState(null);
+  const [subjects, setSubjects] = useState([]);
+  const token = localStorage.getItem("authToken");
+  const tokenDetails = parseJwt(token);
+
+const {
+  data: subjectsResponse,
+  loading: subjectsLoading,
+  error: subjectsError,
+} = useFetch(`/subjects/${tokenDetails.schoolId}`,  {},
+  !!tokenDetails?.schoolId);
+
+  useEffect(() => {
+    if(subjectsResponse) {
+      console.log("hello subject res",subjectsResponse )
+      setSubjects(subjectsResponse?.subjects ?? []);
+    }
+
+  }, [subjectsResponse])
+const {
+  data: addTeacherResponse,
+  loading: addingTeacher,
+  error: addTeacherError,
+} = useFetch(
+  "/api/teachers/addTeacher",
+  {
+    method: "POST",
+    body: submitPayload,
+  },
+  submitPayload !== null // explicit & safe
+);
+
+  useEffect(() => {
+    
+  if (addTeacherResponse) {
+    console.log("Teacher added:", addTeacherResponse);
+    setOpen(false);
+    setSubmitPayload(null);
+  }
+}, [addTeacherResponse]);
+
+useEffect(() => {
+  if (addTeacherError) {
+    console.error(addTeacherError);
+  }
+}, [addTeacherError]);
+
+
+
+
 
   const handleAddTeacher = (data) => {
-    console.log("Teacher Data:", data);
-    setOpen(false);
+    const payload = {
+    fullName: data.name,
+    email: data.email,
+    phone: data.phone,
+    schoolId: tokenDetails.schoolId,
+    subjects: data.subjects,
+  };
+
+  setSubmitPayload(payload);
+  setOpen(false);
   };
 
   return (
@@ -121,6 +180,7 @@ function TeachersPage() {
         open={open}
         onClose={() => setOpen(false)}
         onSubmit={handleAddTeacher}
+        subjects={subjects}
       />
     </Container>
   );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   Box,
@@ -6,7 +6,15 @@ import {
   TextField,
   Button,
   Stack,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Chip,
+  FormHelperText,
 } from "@mui/material";
+import useFetch from "../hooks/useFetch";
+import { parseJwt } from "../utility/commonTask";
 
 const modalStyle = {
   position: "absolute",
@@ -19,26 +27,74 @@ const modalStyle = {
   boxShadow: 24,
   p: 4,
 };
+ 
 
-function AddTeacherModal({ open, onClose, onSubmit }) {
+function AddTeacherModal({ open, onClose, onSubmit, loading, subjects }) {
   const [form, setForm] = React.useState({
     name: "",
     email: "",
     phone: "",
-    subject: "",
+    subjects: [],
   });
+
+  console.log("subjects", subjects)
+
+  const [errors, setErrors] = React.useState({});
+ 
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+
+    // Clear error on change
+    setErrors({ ...errors, [e.target.name]: "" });
+  };
+
+  const handleSubjectsChange = (e) => {
+    setForm({ ...form, subjects: e.target.value });
+    setErrors({ ...errors, subjects: "" });
+  };
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!form.name.trim()) {
+      newErrors.name = "Teacher name is required";
+    } else if (form.name.length < 3) {
+      newErrors.name = "Name must be at least 3 characters";
+    }
+
+    if (!form.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+      newErrors.email = "Invalid email address";
+    }
+
+    if (form.phone && !/^\d{10}$/.test(form.phone)) {
+      newErrors.phone = "Phone must be 10 digits";
+    }
+
+    if (!form.subjects.length) {
+      newErrors.subjects = "Select at least one subject";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = () => {
-    onSubmit(form);
-    setForm({ name: "", email: "", phone: "", subject: "" });
+    if (!validate()) return;
+
+    onSubmit(form); // ✅ API call only if valid
+  };
+
+  const handleClose = () => {
+    setForm({ name: "", email: "", phone: "", subjects: [] });
+    setErrors({});
+    onClose();
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={handleClose}>
       <Box sx={modalStyle}>
         <Typography variant="h6" fontWeight={700} mb={2}>
           Add Teacher
@@ -51,6 +107,8 @@ function AddTeacherModal({ open, onClose, onSubmit }) {
             value={form.name}
             onChange={handleChange}
             fullWidth
+            error={!!errors.name}
+            helperText={errors.name}
           />
 
           <TextField
@@ -59,6 +117,8 @@ function AddTeacherModal({ open, onClose, onSubmit }) {
             value={form.email}
             onChange={handleChange}
             fullWidth
+            error={!!errors.email}
+            helperText={errors.email}
           />
 
           <TextField
@@ -67,23 +127,46 @@ function AddTeacherModal({ open, onClose, onSubmit }) {
             value={form.phone}
             onChange={handleChange}
             fullWidth
+            error={!!errors.phone}
+            helperText={errors.phone}
           />
 
-          <TextField
-            label="Subject"
-            name="subject"
-            value={form.subject}
-            onChange={handleChange}
-            fullWidth
-          />
+          <FormControl fullWidth error={!!errors.subjects}>
+            <InputLabel>Subjects</InputLabel>
+            <Select
+              multiple
+              value={form.subjects}
+              onChange={handleSubjectsChange}
+              renderValue={(selected) => (
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                  {selected.map((value) => (
+                    <Chip key={value} label={value} />
+                  ))}
+                </Box>
+              )}
+            >
+              {subjects?.map((subject) => (
+                <MenuItem key={subject.id} value={subject?.name}>
+                  {subject?.name}
+                </MenuItem>
+              ))}
+            </Select>
+            {errors.subjects && (
+              <FormHelperText>{errors.subjects}</FormHelperText>
+            )}
+          </FormControl>
         </Stack>
 
         <Stack direction="row" spacing={2} justifyContent="flex-end" mt={3}>
-          <Button onClick={onClose} variant="outlined">
+          <Button onClick={handleClose} variant="outlined" disabled={loading}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} variant="contained">
-            Save
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={loading}
+          >
+            {loading ? "Saving..." : "Save"}
           </Button>
         </Stack>
       </Box>

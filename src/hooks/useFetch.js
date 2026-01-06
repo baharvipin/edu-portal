@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 
-export default function useFetch(url, options = {}) {
+export default function useFetch(url, options = {}, enabled = true) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!enabled) return; // 🔴 key line
     let isMounted = true;
 
     const fetchData = async () => {
@@ -48,7 +49,7 @@ export default function useFetch(url, options = {}) {
     return () => {
       isMounted = false;
     };
-  }, [url]);
+  }, [url, enabled]);
 
   return { data, loading, error };
 }
