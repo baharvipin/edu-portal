@@ -113,6 +113,19 @@ const handleEditClick = (subject) => {
   setOpen(true);
 };
 
+const handleDeleteSubject = async (id) => {
+  if (!window.confirm("Are you sure you want to delete this subject?")) return;
+
+  try {
+    await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/subjects/${id}`, {
+      method: "DELETE",
+    });
+ 
+  } catch (err) {
+    console.error("Delete failed", err);
+  }
+};
+
   return (
     <Box p={3}>
       <Paper elevation={4} sx={{ p: 3 }}>
@@ -148,7 +161,7 @@ const handleEditClick = (subject) => {
                 <TableCell>{subject.code}</TableCell>
                 <TableCell>
                   <Button size="small" onClick={() => handleEditClick(subject)}>Edit</Button>
-                  <Button size="small" color="error">
+                  <Button size="small" color="error" onClick={()=> handleDeleteSubject(subject?.id)}>
                     Delete
                   </Button>
                 </TableCell>
