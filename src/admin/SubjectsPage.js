@@ -1,4 +1,4 @@
-import React , {useEffect, useState}from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -15,116 +15,156 @@ import useFetch from "../hooks/useFetch";
 import { parseJwt } from "../utility/commonTask";
 
 function SubjectsPage() {
-  const [open, setOpen] =  useState(false);
+  const [open, setOpen] = useState(false);
   const [subjects, setSubjects] = useState([]);
-  const [selectedSubject, setSelectedSubject] = React.useState({});
-  const token = localStorage.getItem("authToken");
-  const tokenDetails = parseJwt(token);
+  const [selectedSubject, setSelectedSubject] = useState({});
 
   const [submitPayload, setSubmitPayload] = useState(null);
   const [submitPayloadEdit, setSubmitPayloadEdit] = useState(null);
 
-  const {
-  data: subjectEditResponse,
-  loading: subjectEditLoading,
-  error: subjectEditError,
-} = useFetch(
-  `/api/subjects/${selectedSubject.id}`,
-  {
-    method: "PUT",
-    body: submitPayloadEdit,
-  },
-  submitPayloadEdit !== null
-);
+  const [subjectsLoading, setSubjectsLoading] = useState(false);
+  const [subjectsError, setSubjectsError] = useState(null);
 
+  const token = localStorage.getItem("authToken");
+  const tokenDetails = parseJwt(token);
 
-const {
-  data: subjectAddResponse,
-  loading,
-  error: subjectAddError,
-} = useFetch(
-  "/api/subjects/addSubject",
-  {
-    method: "POST",
-    body: submitPayload,
-  },
-  submitPayload !== null
-);
+  /* =======================
+     ADD SUBJECT
+  ======================= */
 
-useEffect(() => {
-  if (subjectAddResponse) {
-    setSubjects([...subjects, subjectAddResponse])
-    setSubmitPayload(null); // reset trigger
-  }
-}, [subjectAddResponse]);
+  const { data: subjectAddResponse } = useFetch(
+    "/api/subjects/addSubject",
+    {
+      method: "POST",
+      body: submitPayload,
+    },
+    submitPayload !== null
+  );
 
-useEffect(() => {
-  if(subjectEditResponse) {
-    //setSubjects([])
-    setSubmitPayloadEdit(null);
-  }
+  useEffect(() => {
+    if (!subjectAddResponse) return;
 
-}, [subjectEditResponse, selectedSubject])
+    const handleAdd = async () => {
+      await fetchAllSubjects();
+      setSubmitPayload(null);
+    };
 
-useEffect(() => {
-  if (subjectAddError) {
-    setSubmitPayload(null);
-  }
-}, [subjectAddError]);
+    handleAdd();
+  }, [subjectAddResponse]);
 
+  /* =======================
+     EDIT SUBJECT
+  ======================= */
 
-  const {
-    data: subjectsResponse,
-    loading: subjectsLoading,
-    error: subjectsError,
-  } = useFetch(`/api/subjects/${tokenDetails.schoolId}`,  {},
-    !!tokenDetails?.schoolId);
-  
-    useEffect(() => {
-      if(subjectsResponse) {
-        console.log("hello subject res",subjectsResponse )
-        setSubjects(subjectsResponse?.subjects ?? []);
+  const { data: subjectEditResponse } = useFetch(
+    `/api/subjects/${selectedSubject.id}`,
+    {
+      method: "PUT",
+      body: submitPayloadEdit,
+    },
+    submitPayloadEdit !== null
+  );
+
+  useEffect(() => {
+    if (!subjectEditResponse) return;
+
+    const handleEdit = async () => {
+      await fetchAllSubjects();
+      setSubmitPayloadEdit(null);
+      setSelectedSubject({});
+    };
+
+    handleEdit();
+  }, [subjectEditResponse]);
+
+  /* =======================
+     FETCH ALL SUBJECTS
+  ======================= */
+
+  const fetchAllSubjects = async () => {
+    try {
+      setSubjectsLoading(true);
+      setSubjectsError(null);
+
+      const token = localStorage.getItem("authToken");
+
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/subjects/${tokenDetails.schoolId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : undefined,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to fetch subjects");
       }
-  
-    }, [subjectsResponse])
 
+      setSubjects(result?.subjects ?? []);
+    } catch (err) {
+      setSubjectsError(err.message);
+    } finally {
+      setSubjectsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (tokenDetails?.schoolId) {
+      fetchAllSubjects();
+    }
+  }, [tokenDetails?.schoolId]);
+
+  /* =======================
+     HANDLERS
+  ======================= */
 
   const handleAddSubject = (data) => {
     const payload = {
-    name: data.name,
-    code: data.code,
-    schoolId: tokenDetails.schoolId
-  };
-  
-  if(data.id){
-    payload.id = data.id 
-    setSubmitPayloadEdit(payload);
-  }else{
-    setSubmitPayload(payload);
-  }
-    
+      name: data.name,
+      code: data.code,
+      schoolId: tokenDetails.schoolId,
+    };
+
+    if (data.id) {
+      payload.id = data.id;
+      setSubmitPayloadEdit(payload);
+    } else {
+      setSubmitPayload(payload);
+    }
+
     setOpen(false);
   };
 
-  
+  const handleEditClick = (subject) => {
+    setSelectedSubject(subject);
+    setOpen(true);
+  };
 
-const handleEditClick = (subject) => {
-  setSelectedSubject(subject);
-  setOpen(true);
-};
+  const handleDeleteSubject = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this subject?")) return;
 
-const handleDeleteSubject = async (id) => {
-  if (!window.confirm("Are you sure you want to delete this subject?")) return;
+    try {
+      await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/subjects/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
-  try {
-    await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/subjects/${id}`, {
-      method: "DELETE",
-    });
- 
-  } catch (err) {
-    console.error("Delete failed", err);
-  }
-};
+      fetchAllSubjects();
+    } catch (err) {
+      console.error("Delete failed", err);
+    }
+  };
+
+  /* =======================
+     RENDER
+  ======================= */
 
   return (
     <Box p={3}>
@@ -138,6 +178,9 @@ const handleDeleteSubject = async (id) => {
             Add Subject
           </Button>
         </Box>
+
+        {subjectsLoading && <p>Loading...</p>}
+        {subjectsError && <p style={{ color: "red" }}>{subjectsError}</p>}
 
         <Table>
           <TableHead>
@@ -153,31 +196,42 @@ const handleDeleteSubject = async (id) => {
               </TableCell>
             </TableRow>
           </TableHead>
-         
-            <TableBody>
-            {subjects?.map((subject) => (
+
+          <TableBody>
+            {subjects.map((subject) => (
               <TableRow key={subject.id}>
                 <TableCell>{subject.name}</TableCell>
                 <TableCell>{subject.code}</TableCell>
                 <TableCell>
-                  <Button size="small" onClick={() => handleEditClick(subject)}>Edit</Button>
-                  <Button size="small" color="error" onClick={()=> handleDeleteSubject(subject?.id)}>
+                  <Button
+                    size="small"
+                    onClick={() => handleEditClick(subject)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="small"
+                    color="error"
+                    onClick={() => handleDeleteSubject(subject.id)}
+                  >
                     Delete
                   </Button>
                 </TableCell>
               </TableRow>
             ))}
-          </TableBody> 
-          
+          </TableBody>
         </Table>
-        {
-          !subjects?.length && <h6>No recorde are found</h6>
-        }
+
+        {!subjects.length && !subjectsLoading && (
+          <Typography mt={2}>No records found</Typography>
+        )}
       </Paper>
 
       <AddSubjectModal
         open={open}
-        onClose={() => {setOpen(false) }}
+        onClose={() => {
+          setOpen(false);
+        }}
         onSubmit={handleAddSubject}
         selectedSubject={selectedSubject}
       />
