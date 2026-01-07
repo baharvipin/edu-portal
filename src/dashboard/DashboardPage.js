@@ -80,13 +80,13 @@ function DashboardPage() {
               />
             </Grid>
 
-            {/* <Grid item xs={12} md={6}>
+             <Grid item xs={12} md={6}>
               <ActionCard
-                title="Class-wise Students"
-                description="View students grouped by class."
+                title="Classes"
+                description="Manage classes."
                 onClick={() => navigate("/admin/classes")}
               />
-            </Grid> */}
+            </Grid>
           </Grid>
         </Container>
       </Box>
