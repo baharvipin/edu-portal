@@ -10,10 +10,19 @@ function AppHeader() {
     navigate("/login", { replace: true });
   };
 
+  const handleHomePage = () => {
+    const status = localStorage.getItem("userRole");
+    if(status == "ADMIN"){
+      navigate("/dashboard", { replace: true });
+    }else if(status == "SUPER_ADMIN") {
+       navigate("/superadmin/profile", { replace: true });
+    }
+  }
+
   return (
     <AppBar position="static">
       <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" sx={{ flexGrow: 1 }} onClick={handleHomePage}>
           Education Portal
         </Typography>
 

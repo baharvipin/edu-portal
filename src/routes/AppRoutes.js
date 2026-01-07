@@ -132,8 +132,7 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
-      </Route>
-      <Route
+         <Route
         path="/admin/teachers"
         element={
           <ProtectedRoute>
@@ -143,12 +142,14 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
-
-      <Route
+ <Route
         path="/admin/subjects"
         element={
           <ProtectedRoute>
+            <Suspense fallback={<div>Loading...</div>}>
             <SubjectsPage />
+            </Suspense>
+            
           </ProtectedRoute>
         }
       />
@@ -157,7 +158,10 @@ function AppRoutes() {
         path="/admin/students"
         element={
           <ProtectedRoute>
-            <StudentsPage />
+            <Suspense fallback={<div>Loading...</div>}>
+             <StudentsPage />
+            </Suspense>
+           
           </ProtectedRoute>
         }
       />
@@ -166,10 +170,19 @@ function AppRoutes() {
         path="/admin/classes"
         element={
           <ProtectedRoute>
-            <ClassWiseStudents />
+             <Suspense fallback={<div>Loading...</div>}>
+              <ClassWiseStudents />
+             </Suspense>
+           
           </ProtectedRoute>
         }
       />
+
+      </Route>
+ 
+     
+
+     
       <Route
         path="*"
         element={

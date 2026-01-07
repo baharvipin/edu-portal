@@ -28,7 +28,7 @@ function DashboardPage() {
           </Typography>
 
           <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-            Manage teachers, students, subjects, and class-wise data.
+            Manage teachers, students, and subjects.
           </Typography>
 
           {/* Overview Cards */}
@@ -45,13 +45,13 @@ function DashboardPage() {
               <DashboardCard title="Subjects" count="--" />
             </Grid>
 
-            <Grid item xs={12} sm={6} md={3}>
+            {/* <Grid item xs={12} sm={6} md={3}>
               <DashboardCard
                 icon={<ClassIcon fontSize="large" />}
                 title="Classes"
                 count="--"
               />
-            </Grid>
+            </Grid> */}
           </Grid>
 
           {/* Management Sections */}
@@ -80,13 +80,13 @@ function DashboardPage() {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            {/* <Grid item xs={12} md={6}>
               <ActionCard
                 title="Class-wise Students"
                 description="View students grouped by class."
                 onClick={() => navigate("/admin/classes")}
               />
-            </Grid>
+            </Grid> */}
           </Grid>
         </Container>
       </Box>
