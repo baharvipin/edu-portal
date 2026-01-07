@@ -17,6 +17,8 @@ import useFetch from "../hooks/useFetch";
 import { parseJwt } from "../utility/commonTask";
 
 function StudentsPage() {
+  const [editStudent, setEditStudent] = useState(null);
+
   const [open, setOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState("All");
   const [classes, setClasses] = useState([]);
@@ -55,6 +57,7 @@ function StudentsPage() {
     setOpen(false);
   };
 
+  console.log("editStudent", editStudent)
   return (
     <Box p={3}>
       <Paper elevation={4} sx={{ p: 3 }}>
@@ -124,7 +127,7 @@ function StudentsPage() {
                           <TableCell>{student.class}</TableCell>
                           <TableCell>{student.email}</TableCell>
                           <TableCell>
-                            <Button size="small">Edit</Button>
+                            <Button size="small" onClick={() => setEditStudent(student)}>Edit</Button>
                             <Button size="small" color="error">
                               Remove
                             </Button>
@@ -140,11 +143,27 @@ function StudentsPage() {
         })}
       </Paper>
 
-      <AddStudentModal
+      {/* <AddStudentModal
         open={open}
         onClose={() => setOpen(false)}
         onSubmit={handleAddStudent}
-      />
+      /> */}
+      <AddStudentModal
+  open={open || !!editStudent}
+  student={editStudent}
+  onClose={() => {
+    setOpen(false);
+    setEditStudent(null);
+  }}
+  onSuccess={(updatedStudent) => {
+    setStudents((prev) =>
+      prev.map((s) =>
+        s.id === updatedStudent.id ? updatedStudent : s
+      )
+    );
+  }}
+/>
+
     </Box>
   );
 }

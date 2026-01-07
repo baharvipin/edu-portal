@@ -27,7 +27,8 @@ const modalStyle = {
   p: 4,
 };
 
-function AddStudentModal({ open, onClose, onSuccess }) {
+function AddStudentModal({ open, onClose, onSuccess, student = null }) {
+   const isEditMode = !!student;
   const [sectionsResult, setSectionResult] = useState([]);
   const token = localStorage.getItem("authToken");
   const { schoolId } = parseJwt(token);
@@ -45,6 +46,21 @@ function AddStudentModal({ open, onClose, onSuccess }) {
 
   const [errors, setErrors] = useState({});
   const [payload, setPayload] = useState(null);
+   // 🔹 Prefill when editing
+  useEffect(() => {
+    if (student) {
+      setForm({
+        firstName: student.firstName,
+        lastName: student.lastName,
+        email: student.email,
+        phone: student.phone,
+        classId: student.classId,
+        sectionId: student.sectionId,
+        parentName: student.parentName,
+        parentPhone: student.parentPhone,
+      });
+    }
+  }, [student]);
 
   // 🔹 Fetch classes & sections
   const { data: classesRes } = useFetch(
@@ -54,13 +70,23 @@ function AddStudentModal({ open, onClose, onSuccess }) {
   );
 
   // 🔹 Submit student
-  const { data: addStudentRes, loading } = useFetch(
-    "/api/students",
+  // const { data: addStudentRes, loading } = useFetch(
+  //   "/api/students",
+  //   {
+  //     method: "POST",
+  //     body: payload,
+  //   },
+  //   payload !== null,
+  // );
+
+    // Create / Update API
+  const { data: addStudentRes } = useFetch(
+    isEditMode ? `/api/students/${student?.id}` : "/api/students",
     {
-      method: "POST",
+      method: isEditMode ? "PUT" : "POST",
       body: payload,
     },
-    payload !== null,
+    payload !== null
   );
 
   useEffect(() => {
@@ -69,6 +95,7 @@ function AddStudentModal({ open, onClose, onSuccess }) {
       handleClose();
     }
   }, [addStudentRes]);
+
 
   const handleChange = (e) => {
     let key = e.target.name;
@@ -82,6 +109,15 @@ function AddStudentModal({ open, onClose, onSuccess }) {
       setSectionResult(sections);
     }
   };
+
+  useEffect(()=> {
+if(form.classId){
+  const sections =
+        classesRes?.classes.find((cls) => cls.id === form?.classId)?.sections ?? [];
+
+      setSectionResult(sections);
+}
+  },[form.classId])
 
   const validate = () => {
     const e = {};
@@ -134,8 +170,8 @@ function AddStudentModal({ open, onClose, onSuccess }) {
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={modalStyle}>
-        <Typography variant="h6" fontWeight={700} mb={2}>
-          Add Student
+       <Typography variant="h6" fontWeight={700}>
+          {isEditMode ? "Edit Student" : "Add Student"}
         </Typography>
 
         <Stack spacing={2}>
@@ -234,8 +270,8 @@ function AddStudentModal({ open, onClose, onSuccess }) {
           <Button variant="outlined" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant="contained" onClick={handleSubmit}>
-            {"Save"}
+         <Button variant="contained" onClick={handleSubmit}>
+            {isEditMode ? "Update" : "Save"}
           </Button>
         </Stack>
       </Box>
