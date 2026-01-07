@@ -28,7 +28,7 @@ const modalStyle = {
 };
 
 function AddStudentModal({ open, onClose, onSuccess, student = null }) {
-   const isEditMode = !!student;
+  const isEditMode = !!student;
   const [sectionsResult, setSectionResult] = useState([]);
   const token = localStorage.getItem("authToken");
   const { schoolId } = parseJwt(token);
@@ -46,7 +46,7 @@ function AddStudentModal({ open, onClose, onSuccess, student = null }) {
 
   const [errors, setErrors] = useState({});
   const [payload, setPayload] = useState(null);
-   // 🔹 Prefill when editing
+  // 🔹 Prefill when editing
   useEffect(() => {
     if (student) {
       setForm({
@@ -79,14 +79,14 @@ function AddStudentModal({ open, onClose, onSuccess, student = null }) {
   //   payload !== null,
   // );
 
-    // Create / Update API
+  // Create / Update API
   const { data: addStudentRes } = useFetch(
     isEditMode ? `/api/students/${student?.id}` : "/api/students",
     {
       method: isEditMode ? "PUT" : "POST",
       body: payload,
     },
-    payload !== null
+    payload !== null,
   );
 
   useEffect(() => {
@@ -95,7 +95,6 @@ function AddStudentModal({ open, onClose, onSuccess, student = null }) {
       handleClose();
     }
   }, [addStudentRes]);
-
 
   const handleChange = (e) => {
     let key = e.target.name;
@@ -110,14 +109,15 @@ function AddStudentModal({ open, onClose, onSuccess, student = null }) {
     }
   };
 
-  useEffect(()=> {
-if(form.classId){
-  const sections =
-        classesRes?.classes.find((cls) => cls.id === form?.classId)?.sections ?? [];
+  useEffect(() => {
+    if (form.classId) {
+      const sections =
+        classesRes?.classes.find((cls) => cls.id === form?.classId)?.sections ??
+        [];
 
       setSectionResult(sections);
-}
-  },[form.classId])
+    }
+  }, [form.classId]);
 
   const validate = () => {
     const e = {};
@@ -170,7 +170,7 @@ if(form.classId){
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={modalStyle}>
-       <Typography variant="h6" fontWeight={700}>
+        <Typography variant="h6" fontWeight={700}>
           {isEditMode ? "Edit Student" : "Add Student"}
         </Typography>
 
@@ -270,7 +270,7 @@ if(form.classId){
           <Button variant="outlined" onClick={handleClose}>
             Cancel
           </Button>
-         <Button variant="contained" onClick={handleSubmit}>
+          <Button variant="contained" onClick={handleSubmit}>
             {isEditMode ? "Update" : "Save"}
           </Button>
         </Stack>

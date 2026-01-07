@@ -18,7 +18,9 @@ import { parseJwt } from "../utility/commonTask";
 
 function StudentsPage() {
   const [editStudent, setEditStudent] = useState(null);
-const [refreshStudents, setRefreshStudents] = useState(true);
+  const [refreshStudents, setRefreshStudents] = useState(true);
+  const [deleteStudentId, setDeleteStudentId] = useState(null);
+  const [activateStudentId, setActivateStudentId] = useState(null);
 
   const [open, setOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState("All");
@@ -29,17 +31,43 @@ const [refreshStudents, setRefreshStudents] = useState(true);
   const token = localStorage.getItem("authToken");
   const tokenDetails = parseJwt(token);
 
+  const { data: activateRes } = useFetch(
+    activateStudentId ? `/api/students/${activateStudentId}/activate` : null,
+    { method: "PUT" },
+    !!activateStudentId,
+  );
+
+  useEffect(() => {
+    if (activateRes) {
+      setActivateStudentId(null);
+      setRefreshStudents(true); // triggers refetch
+    }
+  }, [activateRes]);
+
+  const { data: deleteRes } = useFetch(
+    deleteStudentId ? `/api/students/${deleteStudentId}/delete` : null,
+    { method: "PUT" },
+    !!deleteStudentId,
+  );
+
+  useEffect(() => {
+    if (deleteRes) {
+      setDeleteStudentId(null);
+      setRefreshStudents(true); // 🔥 refetch classes + students
+    }
+  }, [deleteRes]);
+
   /** Fetch classes */
   const { data: classRes } = useFetch(
     `/api/classes/${tokenDetails.schoolId}`,
     {},
-    !!tokenDetails?.schoolId && refreshStudents ,
+    !!tokenDetails?.schoolId && refreshStudents,
   );
 
   useEffect(() => {
     if (classRes) {
       setClasses(classRes.classes ?? []);
-      setRefreshStudents(false); // 🔴 stop refetch
+      setRefreshStudents(false); // stop refetch
     }
   }, [classRes]);
 
@@ -129,10 +157,30 @@ const [refreshStudents, setRefreshStudents] = useState(true);
                           <TableCell>{student.class}</TableCell>
                           <TableCell>{student.email}</TableCell>
                           <TableCell>
-                            <Button size="small" onClick={() => setEditStudent(student)}>Edit</Button>
-                            <Button size="small" color="error">
-                              Remove
+                            <Button
+                              size="small"
+                              onClick={() => setEditStudent(student)}
+                            >
+                              Edit
                             </Button>
+
+                            {student.isActive ? (
+                              <Button
+                                size="small"
+                                color="error"
+                                onClick={() => setDeleteStudentId(student.id)}
+                              >
+                                Remove
+                              </Button>
+                            ) : (
+                              <Button
+                                size="small"
+                                color="success"
+                                onClick={() => setActivateStudentId(student.id)}
+                              >
+                                Activate
+                              </Button>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -151,17 +199,16 @@ const [refreshStudents, setRefreshStudents] = useState(true);
         onSubmit={handleAddStudent}
       /> */}
       <AddStudentModal
-  open={open || !!editStudent}
-  student={editStudent}
-  onClose={() => {
-    setOpen(false);
-    setEditStudent(null);
-  }}
-  onSuccess={() => {
-    setRefreshStudents(true); // 🔥 refetch from API
-  }}
-/>
-
+        open={open || !!editStudent}
+        student={editStudent}
+        onClose={() => {
+          setOpen(false);
+          setEditStudent(null);
+        }}
+        onSuccess={() => {
+          setRefreshStudents(true); //  refetch from API
+        }}
+      />
     </Box>
   );
 }
