@@ -18,6 +18,7 @@ import { parseJwt } from "../utility/commonTask";
 
 function StudentsPage() {
   const [editStudent, setEditStudent] = useState(null);
+const [refreshStudents, setRefreshStudents] = useState(true);
 
   const [open, setOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState("All");
@@ -32,32 +33,33 @@ function StudentsPage() {
   const { data: classRes } = useFetch(
     `/api/classes/${tokenDetails.schoolId}`,
     {},
-    !!tokenDetails?.schoolId,
+    !!tokenDetails?.schoolId && refreshStudents ,
   );
 
   useEffect(() => {
     if (classRes) {
       setClasses(classRes.classes ?? []);
+      setRefreshStudents(false); // 🔴 stop refetch
     }
   }, [classRes]);
 
-  const filteredStudents =
-    selectedClass === "All"
-      ? students
-      : students.filter((s) => s.class === selectedClass);
+  // const filteredStudents =
+  //   selectedClass === "All"
+  //     ? students
+  //     : students.filter((s) => s.class === selectedClass);
 
-  const handleAddStudent = (data) => {
-    setStudents((prev) => [
-      ...prev,
-      {
-        id: `STU${Date.now().toString().slice(-4)}`,
-        ...data,
-      },
-    ]);
-    setOpen(false);
-  };
+  // const handleAddStudent = (data) => {
+  //   setStudents((prev) => [
+  //     ...prev,
+  //     {
+  //       id: `STU${Date.now().toString().slice(-4)}`,
+  //       ...data,
+  //     },
+  //   ]);
+  //   setOpen(false);
+  // };
 
-  console.log("editStudent", editStudent)
+  // console.log("editStudent", editStudent)
   return (
     <Box p={3}>
       <Paper elevation={4} sx={{ p: 3 }}>
@@ -155,12 +157,8 @@ function StudentsPage() {
     setOpen(false);
     setEditStudent(null);
   }}
-  onSuccess={(updatedStudent) => {
-    setStudents((prev) =>
-      prev.map((s) =>
-        s.id === updatedStudent.id ? updatedStudent : s
-      )
-    );
+  onSuccess={() => {
+    setRefreshStudents(true); // 🔥 refetch from API
   }}
 />
 
