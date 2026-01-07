@@ -28,6 +28,7 @@ const modalStyle = {
 };
 
 function AddStudentModal({ open, onClose, onSuccess }) {
+  const [sectionsResult, setSectionResult] = useState([]);
   const token = localStorage.getItem("authToken");
   const { schoolId } = parseJwt(token);
 
@@ -49,13 +50,13 @@ function AddStudentModal({ open, onClose, onSuccess }) {
   const { data: classesRes } = useFetch(
     `/api/classes/${schoolId}`,
     {},
-    !!schoolId
+    !!schoolId,
   );
 
   const { data: sectionsRes } = useFetch(
     form.classId ? `/api/sections/${form.classId}` : null,
     {},
-    !!form.classId
+    !!form.classId,
   );
 
   // 🔹 Submit student
@@ -65,7 +66,7 @@ function AddStudentModal({ open, onClose, onSuccess }) {
       method: "POST",
       body: payload,
     },
-    payload !== null
+    payload !== null,
   );
 
   useEffect(() => {
@@ -76,8 +77,16 @@ function AddStudentModal({ open, onClose, onSuccess }) {
   }, [addStudentRes]);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" });
+    let key = e.target.name;
+    let value = e.target.value;
+    setForm({ ...form, [key]: value });
+    setErrors({ ...errors, [key]: "" });
+    if (key == "classId") {
+      const sections =
+        classesRes?.classes.find((cls) => cls.id === value)?.sections ?? [];
+
+      setSectionResult(sections);
+    }
   };
 
   const validate = () => {
@@ -87,17 +96,14 @@ function AddStudentModal({ open, onClose, onSuccess }) {
     if (!form.lastName.trim()) e.lastName = "Last name is required";
 
     if (!form.email) e.email = "Email is required";
-    else if (!/^\S+@\S+\.\S+$/.test(form.email))
-      e.email = "Invalid email";
+    else if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = "Invalid email";
 
-    if (!/^\d{10}$/.test(form.phone))
-      e.phone = "Phone must be 10 digits";
+    if (!/^\d{10}$/.test(form.phone)) e.phone = "Phone must be 10 digits";
 
     if (!form.classId) e.classId = "Class is required";
     if (!form.sectionId) e.sectionId = "Section is required";
 
-    if (!form.parentName.trim())
-      e.parentName = "Parent name is required";
+    if (!form.parentName.trim()) e.parentName = "Parent name is required";
 
     if (!/^\d{10}$/.test(form.parentPhone))
       e.parentPhone = "Parent phone must be 10 digits";
@@ -130,6 +136,8 @@ function AddStudentModal({ open, onClose, onSuccess }) {
     setPayload(null);
     onClose();
   };
+
+  console.log("classesRes", classesRes, sectionsRes, form);
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -182,11 +190,7 @@ function AddStudentModal({ open, onClose, onSuccess }) {
 
           <FormControl fullWidth error={!!errors.classId}>
             <InputLabel>Class</InputLabel>
-            <Select
-              name="classId"
-              value={form.classId}
-              onChange={handleChange}
-            >
+            <Select name="classId" value={form.classId} onChange={handleChange}>
               {classesRes?.classes?.map((cls) => (
                 <MenuItem key={cls.id} value={cls.id}>
                   {cls.displayName}
@@ -204,7 +208,7 @@ function AddStudentModal({ open, onClose, onSuccess }) {
               onChange={handleChange}
               disabled={!form.classId}
             >
-              {sectionsRes?.sections?.map((sec) => (
+              {sectionsResult?.map((sec) => (
                 <MenuItem key={sec.id} value={sec.id}>
                   {sec.name}
                 </MenuItem>
@@ -238,8 +242,8 @@ function AddStudentModal({ open, onClose, onSuccess }) {
           <Button variant="outlined" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant="contained" onClick={handleSubmit} disabled={loading}>
-            { "Save"}
+          <Button variant="contained" onClick={handleSubmit} >
+            {"Save"}
           </Button>
         </Stack>
       </Box>

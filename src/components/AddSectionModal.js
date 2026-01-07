@@ -26,7 +26,14 @@ const modalStyle = {
   p: 4,
 };
 
-function AddSectionModal({ open, onClose, onSubmit, loading, editSection, classes }) {
+function AddSectionModal({
+  open,
+  onClose,
+  onSubmit,
+  loading,
+  editSection,
+  classes,
+}) {
   const token = localStorage.getItem("authToken");
   const { schoolId } = parseJwt(token);
 
@@ -104,7 +111,9 @@ function AddSectionModal({ open, onClose, onSubmit, loading, editSection, classe
                 </MenuItem>
               ))}
             </Select>
-            {errors.classId && <FormHelperText>{errors.classId}</FormHelperText>}
+            {errors.classId && (
+              <FormHelperText>{errors.classId}</FormHelperText>
+            )}
           </FormControl>
 
           <TextField
@@ -123,11 +132,7 @@ function AddSectionModal({ open, onClose, onSubmit, loading, editSection, classe
           <Button onClick={onClose} variant="outlined" disabled={loading}>
             Cancel
           </Button>
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            disabled={loading}
-          >
+          <Button onClick={handleSubmit} variant="contained" disabled={loading}>
             {loading ? "Saving..." : "Save"}
           </Button>
         </Stack>

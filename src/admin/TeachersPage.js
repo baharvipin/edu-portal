@@ -64,7 +64,6 @@ function TeachersPage() {
       setSubjects(subjectNames ?? []);
     }
   }, [subjectsResponse]);
-  
 
   const {
     data: addTeacherResponse,
@@ -101,8 +100,6 @@ function TeachersPage() {
     }
   }, [addTeacherResponse]);
 
- 
-
   const handleAddTeacher = (data) => {
     const payload = {
       fullName: data.name,
@@ -128,7 +125,6 @@ function TeachersPage() {
     setOpen(false);
   };
 
-
   const handleEditTeacher = (teacher) => {
     console.log("hw", teacher);
     setEditTeacher(teacher);
@@ -136,55 +132,55 @@ function TeachersPage() {
   };
 
   const updateTeacherStatus = (teacherId, isActive) => {
-  setTeachers((prev) =>
-    prev.map((t) =>
-      t.id === teacherId ? { ...t, isActive } : t
-    )
-  );
-};
-
+    setTeachers((prev) =>
+      prev.map((t) => (t.id === teacherId ? { ...t, isActive } : t)),
+    );
+  };
 
   const handleActivateTeacher = async (teacher) => {
-  try {
-    await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/teachers/activate/${teacher.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/teachers/activate/${teacher.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
-    // 🔁 re-fetch teachers
-    updateTeacherStatus(teacher.id, true);
-     
-  } catch (error) {
-    console.error("Activate failed", error);
-  }
-};
+      // 🔁 re-fetch teachers
+      updateTeacherStatus(teacher.id, true);
+    } catch (error) {
+      console.error("Activate failed", error);
+    }
+  };
 
+  const handleDeActivateTeacher = async (teacher) => {
+    try {
+      await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/teachers/deactivate/${teacher.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
-const handleDeActivateTeacher = async (teacher) => {
-  try {
-    await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/teachers/deactivate/${teacher.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    // 🔁 re-fetch teachers
-    updateTeacherStatus(teacher.id, false);
-   
-  } catch (error) {
-    console.error("Deactivate failed", error);
-  }
-};
+      // 🔁 re-fetch teachers
+      updateTeacherStatus(teacher.id, false);
+    } catch (error) {
+      console.error("Deactivate failed", error);
+    }
+  };
 
   const TEACHER_STATUS = {
     true: "ACTIVE",
-    false: "INACTIVE"
-  }
+    false: "INACTIVE",
+  };
   return (
     <Container maxWidth="lg">
       <Paper sx={{ p: 3, mt: 4 }}>
@@ -237,29 +233,42 @@ const handleDeActivateTeacher = async (teacher) => {
                   ))}
                 </TableCell>
 
-               <TableCell>
+                <TableCell>
                   <Chip
                     label={TEACHER_STATUS[teacher.isActive]}
-                    color={TEACHER_STATUS[teacher.isActive] === "ACTIVE" ? "success" : "default"}
+                    color={
+                      TEACHER_STATUS[teacher.isActive] === "ACTIVE"
+                        ? "success"
+                        : "default"
+                    }
                     size="small"
                   />
                 </TableCell>
 
-                <TableCell
-                  align="right" 
-                >
-                  <Button size="small"  onClick={() => handleEditTeacher(teacher)}>Edit</Button>
-                  {
-                    TEACHER_STATUS[teacher.isActive] === "ACTIVE" 
-                    ?  <Button size="small" color="error" onClick={() => handleDeActivateTeacher(teacher)}>
-                    Deactivate
+                <TableCell align="right">
+                  <Button
+                    size="small"
+                    onClick={() => handleEditTeacher(teacher)}
+                  >
+                    Edit
                   </Button>
-                  : <Button size="small" color="error" onClick={() => handleActivateTeacher(teacher)}>
-                    Activate
-                  </Button>
-                  }
-                  
-                 
+                  {TEACHER_STATUS[teacher.isActive] === "ACTIVE" ? (
+                    <Button
+                      size="small"
+                      color="error"
+                      onClick={() => handleDeActivateTeacher(teacher)}
+                    >
+                      Deactivate
+                    </Button>
+                  ) : (
+                    <Button
+                      size="small"
+                      color="error"
+                      onClick={() => handleActivateTeacher(teacher)}
+                    >
+                      Activate
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

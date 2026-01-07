@@ -132,57 +132,50 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
-         <Route
-        path="/admin/teachers"
-        element={
-          <ProtectedRoute>
-            <Suspense fallback={<div>Loading...</div>}>
-              <TeachersPage />
-            </Suspense>
-          </ProtectedRoute>
-        }
-      />
- <Route
-        path="/admin/subjects"
-        element={
-          <ProtectedRoute>
-            <Suspense fallback={<div>Loading...</div>}>
-            <SubjectsPage />
-            </Suspense>
-            
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/admin/teachers"
+          element={
+            <ProtectedRoute>
+              <Suspense fallback={<div>Loading...</div>}>
+                <TeachersPage />
+              </Suspense>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/subjects"
+          element={
+            <ProtectedRoute>
+              <Suspense fallback={<div>Loading...</div>}>
+                <SubjectsPage />
+              </Suspense>
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/admin/students"
-        element={
-          <ProtectedRoute>
-            <Suspense fallback={<div>Loading...</div>}>
-             <StudentsPage />
-            </Suspense>
-           
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/admin/students"
+          element={
+            <ProtectedRoute>
+              <Suspense fallback={<div>Loading...</div>}>
+                <StudentsPage />
+              </Suspense>
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/admin/classes"
-        element={
-          <ProtectedRoute>
-             <Suspense fallback={<div>Loading...</div>}>
-              <ClassWiseStudents />
-             </Suspense>
-           
-          </ProtectedRoute>
-        }
-      />
-
+        <Route
+          path="/admin/classes"
+          element={
+            <ProtectedRoute>
+              <Suspense fallback={<div>Loading...</div>}>
+                <ClassWiseStudents />
+              </Suspense>
+            </ProtectedRoute>
+          }
+        />
       </Route>
- 
-     
 
-     
       <Route
         path="*"
         element={

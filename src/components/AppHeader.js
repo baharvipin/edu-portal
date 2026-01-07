@@ -12,12 +12,12 @@ function AppHeader() {
 
   const handleHomePage = () => {
     const status = localStorage.getItem("userRole");
-    if(status == "ADMIN"){
+    if (status == "ADMIN") {
       navigate("/dashboard", { replace: true });
-    }else if(status == "SUPER_ADMIN") {
-       navigate("/superadmin/profile", { replace: true });
+    } else if (status == "SUPER_ADMIN") {
+      navigate("/superadmin/profile", { replace: true });
     }
-  }
+  };
 
   return (
     <AppBar position="static">

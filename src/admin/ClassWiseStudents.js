@@ -23,6 +23,7 @@ import { parseJwt } from "../utility/commonTask";
 
 function ClassWiseStudents() {
   const [classes, setClasses] = useState([]);
+  const [sections, setSections] = useState([]);
   const [openClass, setOpenClass] = useState(false);
   const [openSection, setOpenSection] = useState(false);
 
@@ -36,7 +37,7 @@ function ClassWiseStudents() {
   const { data: classRes } = useFetch(
     `/api/classes/${tokenDetails.schoolId}`,
     {},
-    !!tokenDetails?.schoolId
+    !!tokenDetails?.schoolId,
   );
 
   useEffect(() => {
@@ -52,7 +53,7 @@ function ClassWiseStudents() {
       method: "POST",
       body: classPayload,
     },
-    classPayload !== null
+    classPayload !== null,
   );
 
   useEffect(() => {
@@ -77,7 +78,7 @@ function ClassWiseStudents() {
       method: "POST",
       body: sectionPayload,
     },
-    sectionPayload !== null
+    sectionPayload !== null,
   );
 
   useEffect(() => {
@@ -89,8 +90,8 @@ function ClassWiseStudents() {
                 ...cls,
                 sections: [...(cls.sections || []), addSectionRes.section],
               }
-            : cls
-        )
+            : cls,
+        ),
       );
 
       setOpenSection(false);
