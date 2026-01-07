@@ -148,6 +148,22 @@ export default function BulkStudentUpload({ schoolId, onSuccess }) {
           <Alert severity="success">
             Uploaded: {result.insertedCount} students <br />
             Skipped: {result.skipped.length}
+            {result?.skipped?.map((r) => {
+              return (
+                <>
+                  {typeof r == "object" &&
+                    Object.entries(r)?.map(([key, value]) => {
+                      return (
+                        <>
+                          <Alert severity="error">
+                            {key} - {value}
+                          </Alert>
+                        </>
+                      );
+                    })}
+                </>
+              );
+            })}
           </Alert>
         )}
       </Stack>

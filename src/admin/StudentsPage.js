@@ -162,7 +162,9 @@ function StudentsPage() {
                           <TableCell>
                             {student.firstName + student.lastName}
                           </TableCell>
-                          <TableCell>{ c.id == student.classId  ? c.displayName : ""}</TableCell>
+                          <TableCell>
+                            {c.id == student.classId ? c.displayName : ""}
+                          </TableCell>
                           <TableCell>{student.email}</TableCell>
                           <TableCell>
                             <Button
