@@ -164,7 +164,7 @@ function ClassWiseStudents() {
                   {cls.students.map((s) => (
                     <TableRow key={s.id}>
                       <TableCell>{s.id}</TableCell>
-                      <TableCell>{s.fullName}</TableCell>
+                      <TableCell>{s.firstName + s.lastName}</TableCell>
                       <TableCell>{s.email}</TableCell>
                     </TableRow>
                   ))}
