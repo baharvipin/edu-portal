@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -13,9 +13,33 @@ import { useNavigate } from "react-router-dom";
 import "../App.css";
 import DashboardCard from "./DashboardCard";
 import ActionCard from "./ActionCard";
+import {parseJwt} from "../utility/commonTask"
+import useFetch from "../hooks/useFetch"
 
 function DashboardPage() {
+  const [teacherCount, setTeacherCount] = useState(0);
+  const [studentCount, setStudentCount] = useState(0);
+  const [subjectCount, setSubjectCount] = useState(0);
+  const [classesCount, setClassesCount] = useState(0);
+ 
+
+    const token = localStorage.getItem("authToken");
+  const tokenDetails = parseJwt(token);
   const navigate = useNavigate();
+  const { data: dashboardRes, loading } = useFetch(
+  `/api/school/${tokenDetails?.schoolId}/overview`
+);
+
+useEffect(() => {
+if(dashboardRes) {
+  console.log("result dashboard", dashboardRes)
+  setTeacherCount(dashboardRes?.teachers?.length);
+  setStudentCount(dashboardRes?.students?.length);
+  setSubjectCount(dashboardRes?.subjects?.length)
+  setClassesCount(dashboardRes?.classes?.length)
+}
+}, [dashboardRes])
+
 
   return (
     <>
@@ -34,24 +58,23 @@ function DashboardPage() {
           {/* Overview Cards */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid item xs={12} sm={6} md={3}>
-              <DashboardCard title="Teachers" count="--" />
+              <DashboardCard title="Teachers" count={teacherCount?? "--"} />
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
-              <DashboardCard title="Students" count="--" />
+              <DashboardCard title="Students" count={studentCount ?? "--"} />
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
-              <DashboardCard title="Subjects" count="--" />
+              <DashboardCard title="Subjects" count={subjectCount?? "--"} />
             </Grid>
 
-            {/* <Grid item xs={12} sm={6} md={3}>
-              <DashboardCard
-                icon={<ClassIcon fontSize="large" />}
+            <Grid item xs={12} sm={6} md={3}>
+              <DashboardCard 
                 title="Classes"
-                count="--"
+                count={classesCount?? "--"}
               />
-            </Grid> */}
+            </Grid> 
           </Grid>
 
           {/* Management Sections */}
