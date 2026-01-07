@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect, Fragment} from "react";
 import {
   Box,
   Button,
@@ -13,27 +13,34 @@ import {
   MenuItem,
 } from "@mui/material";
 import AddStudentModal from "../admin/AddStudentModal";
+import useFetch from "../hooks/useFetch";
+import { parseJwt } from "../utility/commonTask";
 
 function StudentsPage() {
-  const [open, setOpen] = React.useState(false);
-  const [selectedClass, setSelectedClass] = React.useState("All");
-
-  const classes = ["All", "Class 1", "Class 2", "Class 3"];
+  const [open, setOpen] = useState(false);
+  const [selectedClass, setSelectedClass] = useState("All");
+ const [classes, setClasses] = useState([]); 
 
   const [students, setStudents] = React.useState([
-    {
-      id: "STU001",
-      name: "Rahul Sharma",
-      class: "Class 1",
-      email: "rahul@gmail.com",
-    },
-    {
-      id: "STU002",
-      name: "Anjali Verma",
-      class: "Class 2",
-      email: "anjali@gmail.com",
-    },
   ]);
+
+
+    const token = localStorage.getItem("authToken");
+    const tokenDetails = parseJwt(token);
+  
+    /** Fetch classes */
+    const { data: classRes } = useFetch(
+      `/api/classes/${tokenDetails.schoolId}`,
+      {},
+      !!tokenDetails?.schoolId,
+    );
+  
+    useEffect(() => {
+      if (classRes) {
+        setClasses(classRes.classes ?? []);
+      }
+    }, [classRes]);
+  
 
   const filteredStudents =
     selectedClass === "All"
@@ -65,7 +72,7 @@ function StudentsPage() {
         </Box>
 
         {/* Class Filter */}
-        <Box mb={2} display="flex" alignItems="center" gap={2}>
+        {/* <Box mb={2} display="flex" alignItems="center" gap={2}>
           <Typography variant="body2">Filter by Class:</Typography>
           <Select
             size="small"
@@ -73,15 +80,23 @@ function StudentsPage() {
             onChange={(e) => setSelectedClass(e.target.value)}
           >
             {classes.map((cls) => (
-              <MenuItem key={cls} value={cls}>
-                {cls}
+              <MenuItem key={cls.id} value={cls?.name}>
+                {cls?.displayName}
               </MenuItem>
             ))}
           </Select>
-        </Box>
+        </Box> */}
 
         {/* Student Table */}
-        <Table>
+        {
+          classes.map((c) => {
+            return( 
+              <Fragment key={c.id}>
+               { c.students.length ? <Fragment>
+               <Typography variant="h6" fontWeight={700}>
+                {c.displayName}
+              </Typography>
+               <Table>
           <TableHead>
             <TableRow>
               <TableCell>
@@ -102,11 +117,13 @@ function StudentsPage() {
             </TableRow>
           </TableHead>
 
+              
+
           <TableBody>
-            {filteredStudents.map((student) => (
+           { c.students.map((student) => (
               <TableRow key={student.id}>
                 <TableCell>{student.id}</TableCell>
-                <TableCell>{student.name}</TableCell>
+                <TableCell>{student.firstName + student.lastName}</TableCell>
                 <TableCell>{student.class}</TableCell>
                 <TableCell>{student.email}</TableCell>
                 <TableCell>
@@ -118,7 +135,16 @@ function StudentsPage() {
               </TableRow>
             ))}
           </TableBody>
-        </Table>
+       
+  </Table>
+  </Fragment>
+  : null
+          }
+              </Fragment>
+            )
+          })
+        }
+       
       </Paper>
 
       <AddStudentModal

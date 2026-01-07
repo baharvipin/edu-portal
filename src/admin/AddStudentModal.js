@@ -53,11 +53,7 @@ function AddStudentModal({ open, onClose, onSuccess }) {
     !!schoolId,
   );
 
-  const { data: sectionsRes } = useFetch(
-    form.classId ? `/api/sections/${form.classId}` : null,
-    {},
-    !!form.classId,
-  );
+ 
 
   // 🔹 Submit student
   const { data: addStudentRes, loading } = useFetch(
@@ -136,8 +132,7 @@ function AddStudentModal({ open, onClose, onSuccess }) {
     setPayload(null);
     onClose();
   };
-
-  console.log("classesRes", classesRes, sectionsRes, form);
+ 
 
   return (
     <Modal open={open} onClose={handleClose}>
