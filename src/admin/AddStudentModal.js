@@ -53,8 +53,6 @@ function AddStudentModal({ open, onClose, onSuccess }) {
     !!schoolId,
   );
 
- 
-
   // 🔹 Submit student
   const { data: addStudentRes, loading } = useFetch(
     "/api/students",
@@ -132,7 +130,6 @@ function AddStudentModal({ open, onClose, onSuccess }) {
     setPayload(null);
     onClose();
   };
- 
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -237,7 +234,7 @@ function AddStudentModal({ open, onClose, onSuccess }) {
           <Button variant="outlined" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant="contained" onClick={handleSubmit} >
+          <Button variant="contained" onClick={handleSubmit}>
             {"Save"}
           </Button>
         </Stack>

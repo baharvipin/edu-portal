@@ -1,4 +1,4 @@
-import React, {useState, useEffect, Fragment} from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import {
   Box,
   Button,
@@ -19,28 +19,25 @@ import { parseJwt } from "../utility/commonTask";
 function StudentsPage() {
   const [open, setOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState("All");
- const [classes, setClasses] = useState([]); 
+  const [classes, setClasses] = useState([]);
 
-  const [students, setStudents] = React.useState([
-  ]);
+  const [students, setStudents] = React.useState([]);
 
+  const token = localStorage.getItem("authToken");
+  const tokenDetails = parseJwt(token);
 
-    const token = localStorage.getItem("authToken");
-    const tokenDetails = parseJwt(token);
-  
-    /** Fetch classes */
-    const { data: classRes } = useFetch(
-      `/api/classes/${tokenDetails.schoolId}`,
-      {},
-      !!tokenDetails?.schoolId,
-    );
-  
-    useEffect(() => {
-      if (classRes) {
-        setClasses(classRes.classes ?? []);
-      }
-    }, [classRes]);
-  
+  /** Fetch classes */
+  const { data: classRes } = useFetch(
+    `/api/classes/${tokenDetails.schoolId}`,
+    {},
+    !!tokenDetails?.schoolId,
+  );
+
+  useEffect(() => {
+    if (classRes) {
+      setClasses(classRes.classes ?? []);
+    }
+  }, [classRes]);
 
   const filteredStudents =
     selectedClass === "All"
@@ -88,63 +85,59 @@ function StudentsPage() {
         </Box> */}
 
         {/* Student Table */}
-        {
-          classes.map((c) => {
-            return( 
-              <Fragment key={c.id}>
-               { c.students.length ? <Fragment>
-               <Typography variant="h6" fontWeight={700}>
-                {c.displayName}
-              </Typography>
-               <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <strong>Student ID</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Name</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Class</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Email</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Actions</strong>
-              </TableCell>
-            </TableRow>
-          </TableHead>
+        {classes.map((c) => {
+          return (
+            <Fragment key={c.id}>
+              {c.students.length ? (
+                <Fragment>
+                  <Typography variant="h6" fontWeight={700}>
+                    {c.displayName}
+                  </Typography>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>
+                          <strong>Student ID</strong>
+                        </TableCell>
+                        <TableCell>
+                          <strong>Name</strong>
+                        </TableCell>
+                        <TableCell>
+                          <strong>Class</strong>
+                        </TableCell>
+                        <TableCell>
+                          <strong>Email</strong>
+                        </TableCell>
+                        <TableCell>
+                          <strong>Actions</strong>
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
 
-              
-
-          <TableBody>
-           { c.students.map((student) => (
-              <TableRow key={student.id}>
-                <TableCell>{student.id}</TableCell>
-                <TableCell>{student.firstName + student.lastName}</TableCell>
-                <TableCell>{student.class}</TableCell>
-                <TableCell>{student.email}</TableCell>
-                <TableCell>
-                  <Button size="small">Edit</Button>
-                  <Button size="small" color="error">
-                    Remove
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-       
-  </Table>
-  </Fragment>
-  : null
-          }
-              </Fragment>
-            )
-          })
-        }
-       
+                    <TableBody>
+                      {c.students.map((student) => (
+                        <TableRow key={student.id}>
+                          <TableCell>{student.id}</TableCell>
+                          <TableCell>
+                            {student.firstName + student.lastName}
+                          </TableCell>
+                          <TableCell>{student.class}</TableCell>
+                          <TableCell>{student.email}</TableCell>
+                          <TableCell>
+                            <Button size="small">Edit</Button>
+                            <Button size="small" color="error">
+                              Remove
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Fragment>
+              ) : null}
+            </Fragment>
+          );
+        })}
       </Paper>
 
       <AddStudentModal
