@@ -15,6 +15,7 @@ import {
 import AddStudentModal from "../admin/AddStudentModal";
 import useFetch from "../hooks/useFetch";
 import { parseJwt } from "../utility/commonTask";
+import BulkStudentUpload from "../components/BulkStudentUpload";
 
 function StudentsPage() {
   const [editStudent, setEditStudent] = useState(null);
@@ -88,8 +89,15 @@ function StudentsPage() {
   // };
 
   // console.log("editStudent", editStudent)
+  const refetchStudents = () => {
+    setRefreshStudents(true); //  refetch from API
+  };
   return (
     <Box p={3}>
+      <BulkStudentUpload
+        schoolId={tokenDetails?.schoolId}
+        onSuccess={() => refetchStudents()} // optional
+      />
       <Paper elevation={4} sx={{ p: 3 }}>
         <Box display="flex" justifyContent="space-between" mb={2}>
           <Typography variant="h6" fontWeight={700}>

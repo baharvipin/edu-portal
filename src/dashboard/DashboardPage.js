@@ -13,33 +13,31 @@ import { useNavigate } from "react-router-dom";
 import "../App.css";
 import DashboardCard from "./DashboardCard";
 import ActionCard from "./ActionCard";
-import {parseJwt} from "../utility/commonTask"
-import useFetch from "../hooks/useFetch"
+import { parseJwt } from "../utility/commonTask";
+import useFetch from "../hooks/useFetch";
 
 function DashboardPage() {
   const [teacherCount, setTeacherCount] = useState(0);
   const [studentCount, setStudentCount] = useState(0);
   const [subjectCount, setSubjectCount] = useState(0);
   const [classesCount, setClassesCount] = useState(0);
- 
 
-    const token = localStorage.getItem("authToken");
+  const token = localStorage.getItem("authToken");
   const tokenDetails = parseJwt(token);
   const navigate = useNavigate();
   const { data: dashboardRes, loading } = useFetch(
-  `/api/school/${tokenDetails?.schoolId}/overview`
-);
+    `/api/school/${tokenDetails?.schoolId}/overview`,
+  );
 
-useEffect(() => {
-if(dashboardRes) {
-  console.log("result dashboard", dashboardRes)
-  setTeacherCount(dashboardRes?.teachers?.length);
-  setStudentCount(dashboardRes?.students?.length);
-  setSubjectCount(dashboardRes?.subjects?.length)
-  setClassesCount(dashboardRes?.classes?.length)
-}
-}, [dashboardRes])
-
+  useEffect(() => {
+    if (dashboardRes) {
+      console.log("result dashboard", dashboardRes);
+      setTeacherCount(dashboardRes?.teachers?.length);
+      setStudentCount(dashboardRes?.students?.length);
+      setSubjectCount(dashboardRes?.subjects?.length);
+      setClassesCount(dashboardRes?.classes?.length);
+    }
+  }, [dashboardRes]);
 
   return (
     <>
@@ -58,7 +56,7 @@ if(dashboardRes) {
           {/* Overview Cards */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid item xs={12} sm={6} md={3}>
-              <DashboardCard title="Teachers" count={teacherCount?? "--"} />
+              <DashboardCard title="Teachers" count={teacherCount ?? "--"} />
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
@@ -66,15 +64,12 @@ if(dashboardRes) {
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
-              <DashboardCard title="Subjects" count={subjectCount?? "--"} />
+              <DashboardCard title="Subjects" count={subjectCount ?? "--"} />
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
-              <DashboardCard 
-                title="Classes"
-                count={classesCount?? "--"}
-              />
-            </Grid> 
+              <DashboardCard title="Classes" count={classesCount ?? "--"} />
+            </Grid>
           </Grid>
 
           {/* Management Sections */}
