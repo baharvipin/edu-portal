@@ -13,15 +13,18 @@ export default function useFetch(url, options = {}, enabled = true) {
       try {
         const token = localStorage.getItem("authToken");
 
-        const response = await fetch(  `${process.env.REACT_APP_API_BASE_URL}${url}`, {
-          method: options.method || "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : undefined,
-            ...options.headers,
+        const response = await fetch(
+          `${process.env.REACT_APP_API_BASE_URL}${url}`,
+          {
+            method: options.method || "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token ? `Bearer ${token}` : undefined,
+              ...options.headers,
+            },
+            body: options.body ? JSON.stringify(options.body) : undefined,
           },
-          body: options.body ? JSON.stringify(options.body) : undefined,
-        });
+        );
 
         const result = await response.json();
 

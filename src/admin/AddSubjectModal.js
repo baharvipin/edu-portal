@@ -21,18 +21,17 @@ const modalStyle = {
 };
 
 function AddSubjectModal({ open, onClose, onSubmit, selectedSubject }) {
-  console.log("selectedSubject", selectedSubject)
+  console.log("selectedSubject", selectedSubject);
   const [form, setForm] = React.useState({
-    name:  "",
-    code:  "",
+    name: "",
+    code: "",
   });
-
 
   const [errors, setErrors] = React.useState({});
 
   useEffect(() => {
-    setForm(selectedSubject)
-  }, [selectedSubject])
+    setForm(selectedSubject);
+  }, [selectedSubject]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

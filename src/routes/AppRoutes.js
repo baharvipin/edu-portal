@@ -162,7 +162,7 @@ function AppRoutes() {
         }
       />
 
-     <Route
+      <Route
         path="/admin/classes"
         element={
           <ProtectedRoute>

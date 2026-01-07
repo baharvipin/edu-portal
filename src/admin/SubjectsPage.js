@@ -38,7 +38,7 @@ function SubjectsPage() {
       method: "POST",
       body: submitPayload,
     },
-    submitPayload !== null
+    submitPayload !== null,
   );
 
   useEffect(() => {
@@ -62,7 +62,7 @@ function SubjectsPage() {
       method: "PUT",
       body: submitPayloadEdit,
     },
-    submitPayloadEdit !== null
+    submitPayloadEdit !== null,
   );
 
   useEffect(() => {
@@ -96,7 +96,7 @@ function SubjectsPage() {
             "Content-Type": "application/json",
             Authorization: token ? `Bearer ${token}` : undefined,
           },
-        }
+        },
       );
 
       const result = await response.json();
@@ -146,15 +146,13 @@ function SubjectsPage() {
   };
 
   const handleDeleteSubject = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this subject?")) return;
+    if (!window.confirm("Are you sure you want to delete this subject?"))
+      return;
 
     try {
-      await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/subjects/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
+      await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/subjects/${id}`, {
+        method: "DELETE",
+      });
 
       fetchAllSubjects();
     } catch (err) {
@@ -203,10 +201,7 @@ function SubjectsPage() {
                 <TableCell>{subject.name}</TableCell>
                 <TableCell>{subject.code}</TableCell>
                 <TableCell>
-                  <Button
-                    size="small"
-                    onClick={() => handleEditClick(subject)}
-                  >
+                  <Button size="small" onClick={() => handleEditClick(subject)}>
                     Edit
                   </Button>
                   <Button

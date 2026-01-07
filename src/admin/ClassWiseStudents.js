@@ -24,9 +24,7 @@ const data = [
   },
   {
     className: "Class 2",
-    students: [
-      { id: "STU003", name: "Neha Singh", email: "neha@gmail.com" },
-    ],
+    students: [{ id: "STU003", name: "Neha Singh", email: "neha@gmail.com" }],
   },
   {
     className: "Class 3",
@@ -50,9 +48,7 @@ function ClassWiseStudents() {
               width="100%"
               alignItems="center"
             >
-              <Typography fontWeight={600}>
-                {cls.className}
-              </Typography>
+              <Typography fontWeight={600}>{cls.className}</Typography>
 
               <Chip
                 label={`${cls.students.length} Students`}
@@ -71,9 +67,15 @@ function ClassWiseStudents() {
               <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell><strong>ID</strong></TableCell>
-                    <TableCell><strong>Name</strong></TableCell>
-                    <TableCell><strong>Email</strong></TableCell>
+                    <TableCell>
+                      <strong>ID</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>Name</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>Email</strong>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>

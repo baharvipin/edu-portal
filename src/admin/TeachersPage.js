@@ -17,91 +17,159 @@ import AddIcon from "@mui/icons-material/Add";
 import AddTeacherModal from "./AddTeacherModal";
 import useFetch from "../hooks/useFetch";
 import { parseJwt } from "../utility/commonTask";
- 
 
 function TeachersPage() {
   const [teachers, setTeachers] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [submitPayload, setSubmitPayload] = useState(null);
   const [subjects, setSubjects] = useState([]);
+  const [editTeacher, setEditTeacher] = useState(null);
+
   const token = localStorage.getItem("authToken");
   const tokenDetails = parseJwt(token);
 
   const {
-  data: teachersResponse,
-  loading: teachersLoading,
-  error: teachersError,
-} = useFetch(
-  `/api/teachers/${tokenDetails.schoolId}`,
-  undefined,
-  !!tokenDetails?.schoolId
-);
-
-useEffect(()=>{
-  if(teachersResponse) {
-    console.log("teacher res", teachersResponse);
-    setTeachers(teachersResponse?.teachers?? []);
-  }
-
-}, [teachersResponse])
-
-const {
-  data: subjectsResponse,
-  loading: subjectsLoading,
-  error: subjectsError,
-} = useFetch(`/subjects/${tokenDetails.schoolId}`,  {},
-  !!tokenDetails?.schoolId);
+    data: teachersResponse,
+    loading: teachersLoading,
+    error: teachersError,
+  } = useFetch(
+    `/api/teachers/${tokenDetails.schoolId}`,
+    undefined,
+    !!tokenDetails?.schoolId,
+  );
 
   useEffect(() => {
-    if(subjectsResponse) {
-      console.log("hello subject res",subjectsResponse )
-      setSubjects(subjectsResponse?.subjects ?? []);
+    if (teachersResponse) {
+      console.log("teacher res", teachersResponse);
+      setTeachers(teachersResponse?.teachers ?? []);
     }
+  }, [teachersResponse]);
 
-  }, [subjectsResponse])
-const {
-  data: addTeacherResponse,
-  loading: addingTeacher,
-  error: addTeacherError,
-} = useFetch(
-  "/api/teachers/addTeacher",
-  {
-    method: "POST",
-    body: submitPayload,
-  },
-  submitPayload !== null // explicit & safe
-);
+  const {
+    data: subjectsResponse,
+    loading: subjectsLoading,
+    error: subjectsError,
+  } = useFetch(
+    `/api/subjects/${tokenDetails.schoolId}`,
+    {},
+    !!tokenDetails?.schoolId,
+  );
 
   useEffect(() => {
-    
-  if (addTeacherResponse) {
-    console.log("Teacher added:", addTeacherResponse);
-    setOpen(false);
-    setSubmitPayload(null);
-  }
-}, [addTeacherResponse]);
+    if (subjectsResponse) {
+      console.log("hello subject res", subjectsResponse);
+      const subjectNames = subjectsResponse?.subjects?.map((s) => s.name);
+      console.log("hello subject subjectNames", subjectNames);
 
-useEffect(() => {
-  if (addTeacherError) {
-    console.error(addTeacherError);
-  }
-}, [addTeacherError]);
+      setSubjects(subjectNames ?? []);
+    }
+  }, [subjectsResponse]);
+  // const {
+  //   data: addTeacherResponse,
+  //   loading: addingTeacher,
+  //   error: addTeacherError,
+  // } = useFetch(
+  //   "/api/teachers/addTeacher",
+  //   {
+  //     method: "POST",
+  //     body: submitPayload,
+  //   },
+  //   submitPayload !== null // explicit & safe
+  // );
 
+  const {
+    data: addTeacherResponse,
+    loading: addingTeacher,
+    error: addTeacherError,
+  } = useFetch(
+    submitPayload?.mode === "edit"
+      ? `/api/teachers/${submitPayload.teacherId}`
+      : "/api/teachers/addTeacher",
+    {
+      method: submitPayload?.mode === "edit" ? "PUT" : "POST",
+      body: submitPayload,
+    },
+    submitPayload !== null,
+  );
 
+  useEffect(() => {
+    if (addTeacherResponse) {
+      if (submitPayload?.mode === "edit") {
+        setTeachers((prev) =>
+          prev.map((t) =>
+            t.id === addTeacherResponse.teacher.id
+              ? addTeacherResponse.teacher
+              : t,
+          ),
+        );
+      } else {
+        setTeachers((prev) => [...prev, addTeacherResponse.teacher]);
+      }
 
+      setOpen(false);
+      setEditTeacher(null);
+      setSubmitPayload(null);
+    }
+  }, [addTeacherResponse]);
 
+  //   useEffect(() => {
+
+  //   if (addTeacherResponse) {
+  //     console.log("Teacher added:", addTeacherResponse);
+  //     setOpen(false);
+  //     setSubmitPayload(null);
+  //   }
+  // }, [addTeacherResponse]);
+
+  // useEffect(() => {
+  //   if (addTeacherError) {
+  //     console.error(addTeacherError);
+  //   }
+  // }, [addTeacherError]);
 
   const handleAddTeacher = (data) => {
+    console.log("why this ", data);
     const payload = {
-    fullName: data.name,
-    email: data.email,
-    phone: data.phone,
-    schoolId: tokenDetails.schoolId,
-    subjects: data.subjects,
+      fullName: data.name,
+      phone: data.phone,
+      email: data.email,
+      subjects: data.subjects,
+      schoolId: tokenDetails.schoolId,
+    };
+
+    if (editTeacher) {
+      setSubmitPayload({
+        ...payload,
+        teacherId: editTeacher.id,
+        mode: "edit",
+      });
+    } else {
+      setSubmitPayload({
+        ...payload,
+        email: data.email,
+      });
+    }
+
+    setOpen(false);
   };
 
-  setSubmitPayload(payload);
-  setOpen(false);
+  // const handleAddTeacher = (data) => {
+  //   const payload = {
+  //   fullName: data.name,
+  //   email: data.email,
+  //   phone: data.phone,
+  //   schoolId: tokenDetails.schoolId,
+  //   subjects: data.subjects,
+  // };
+
+  // setSubmitPayload(payload);
+  // setOpen(false);
+  // };
+
+  const handleEditTeacher = (teacher) => {
+    console.log("hw", teacher);
+    setEditTeacher(teacher);
+    setOpen(true);
   };
 
   return (
@@ -132,9 +200,9 @@ useEffect(() => {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Subjects</TableCell>
-              <TableCell>Classes</TableCell>
               <TableCell>Status</TableCell>
+              <TableCell>Subjects</TableCell>
+
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -144,28 +212,36 @@ useEffect(() => {
               <TableRow key={teacher.id}>
                 <TableCell>{teacher.fullName}</TableCell>
                 <TableCell>{teacher.email}</TableCell>
-
+                <TableCell>{teacher.phone}</TableCell>
                 <TableCell>
                   {teacher?.subjects?.map((s) => (
-                    <Chip key={s.id} label={s.name} size="small" sx={{ mr: 0.5 }} />
+                    <Chip
+                      key={s.id}
+                      label={s.name}
+                      size="small"
+                      sx={{ mr: 0.5 }}
+                    />
                   ))}
                 </TableCell>
 
-                <TableCell>
+                {/* <TableCell>
                   {teacher?.classes?.map((c) => (
                     <Chip key={c} label={c} size="small" sx={{ mr: 0.5 }} />
                   ))}
-                </TableCell>
+                </TableCell> */}
 
-                <TableCell>
+                {/* <TableCell>
                   <Chip
                     label={teacher.status}
                     color={teacher.status === "ACTIVE" ? "success" : "default"}
                     size="small"
                   />
-                </TableCell>
+                </TableCell> */}
 
-                <TableCell align="right">
+                <TableCell
+                  align="right"
+                  onClick={() => handleEditTeacher(teacher)}
+                >
                   <Button size="small">Edit</Button>
                   <Button size="small" color="error">
                     Deactivate
@@ -181,6 +257,7 @@ useEffect(() => {
         onClose={() => setOpen(false)}
         onSubmit={handleAddTeacher}
         subjects={subjects}
+        editTeacher={editTeacher}
       />
     </Container>
   );

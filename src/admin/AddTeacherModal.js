@@ -27,9 +27,15 @@ const modalStyle = {
   boxShadow: 24,
   p: 4,
 };
- 
 
-function AddTeacherModal({ open, onClose, onSubmit, loading, subjects }) {
+function AddTeacherModal({
+  open,
+  onClose,
+  onSubmit,
+  loading,
+  subjects,
+  editTeacher,
+}) {
   const [form, setForm] = React.useState({
     name: "",
     email: "",
@@ -37,10 +43,31 @@ function AddTeacherModal({ open, onClose, onSubmit, loading, subjects }) {
     subjects: [],
   });
 
-  console.log("subjects", subjects)
+  console.log("editTeacher", editTeacher);
 
   const [errors, setErrors] = React.useState({});
- 
+
+  useEffect(() => {
+    if (editTeacher) {
+      console.log("check if", editTeacher);
+      const subjectNames = editTeacher?.subjects?.map((s) => s.name);
+
+      setForm({
+        name: editTeacher.fullName,
+        email: editTeacher.email,
+        phone: editTeacher.phone,
+        subjects: subjectNames,
+      });
+    } else {
+      console.log("check else", form);
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        subjects: subjects,
+      });
+    }
+  }, [editTeacher]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -92,6 +119,7 @@ function AddTeacherModal({ open, onClose, onSubmit, loading, subjects }) {
     setErrors({});
     onClose();
   };
+  console.log("form.subjects subjects", form.subjects, subjects);
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -146,8 +174,8 @@ function AddTeacherModal({ open, onClose, onSubmit, loading, subjects }) {
               )}
             >
               {subjects?.map((subject) => (
-                <MenuItem key={subject.id} value={subject?.name}>
-                  {subject?.name}
+                <MenuItem key={subject} value={subject}>
+                  {subject}
                 </MenuItem>
               ))}
             </Select>
@@ -161,11 +189,7 @@ function AddTeacherModal({ open, onClose, onSubmit, loading, subjects }) {
           <Button onClick={handleClose} variant="outlined" disabled={loading}>
             Cancel
           </Button>
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            disabled={loading}
-          >
+          <Button onClick={handleSubmit} variant="contained" disabled={loading}>
             {loading ? "Saving..." : "Save"}
           </Button>
         </Stack>
