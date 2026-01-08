@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedLayout from "../components/ProtectedLayout";
+import RoleProtectedRoute from "../components/RoleProtectedRoute";
 
 const LoginPage = lazy(() => import("../login/LoginPage"));
 const RegistrationPage = lazy(() => import("../registration/RegistrationPage"));
@@ -22,7 +23,7 @@ const TeachersPage = lazy(() => import("../admin/TeachersPage"));
 const SubjectsPage = lazy(() => import("../admin/SubjectsPage"));
 const StudentsPage = lazy(() => import("../admin/StudentsPage"));
 const ClassWiseStudents = lazy(() => import("../admin/ClassWiseStudents"));
-const SchoolOverviewPage =lazy(() => import("../admin/SchoolOverviewPage"));
+const SchoolOverviewPage = lazy(() => import("../admin/SchoolOverviewPage"));
 
 function ProtectedRoute({ children }) {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -116,76 +117,86 @@ function AppRoutes() {
         <Route
           path="/superadmin/profile"
           element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <SuperAdminDashboard />
-            </Suspense>
+            <RoleProtectedRoute allowedRoles={["SUPER_ADMIN"]}>
+              <Suspense fallback={<div>Loading...</div>}>
+                <SuperAdminDashboard />
+              </Suspense>
+            </RoleProtectedRoute>
           }
         />
 
-        <Route path="/school/profile" element={<SchoolProfilePage />} />
+        <Route
+          path="/school/profile"
+          element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <Suspense fallback={<div>Loading...</div>}>
+                <SchoolProfilePage />
+              </Suspense>
+            </RoleProtectedRoute>
+          }
+        />
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
+           <RoleProtectedRoute allowedRoles={["ADMIN"]}>
               <Suspense fallback={<div>Loading...</div>}>
                 <DashboardPage />
               </Suspense>
-            </ProtectedRoute>
+            </RoleProtectedRoute>
           }
         />
         <Route
           path="/admin/teachers"
           element={
-            <ProtectedRoute>
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
               <Suspense fallback={<div>Loading...</div>}>
                 <TeachersPage />
               </Suspense>
-            </ProtectedRoute>
+            </RoleProtectedRoute>
           }
         />
         <Route
           path="/admin/subjects"
           element={
-            <ProtectedRoute>
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
               <Suspense fallback={<div>Loading...</div>}>
                 <SubjectsPage />
               </Suspense>
-            </ProtectedRoute>
+            </RoleProtectedRoute>
           }
         />
 
         <Route
           path="/admin/students"
           element={
-            <ProtectedRoute>
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
               <Suspense fallback={<div>Loading...</div>}>
                 <StudentsPage />
               </Suspense>
-            </ProtectedRoute>
+            </RoleProtectedRoute>
           }
         />
 
         <Route
           path="/admin/classes"
           element={
-            <ProtectedRoute>
+             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
               <Suspense fallback={<div>Loading...</div>}>
                 <ClassWiseStudents />
               </Suspense>
-            </ProtectedRoute>
+            </RoleProtectedRoute>
           }
         />
-        <Route 
-        path="/admin/:id"
-        element={
-          <ProtectedRoute>
-            <Suspense fallback={<div>Loading...</div>}>
-            <SchoolOverviewPage />
-            </Suspense>
-          </ProtectedRoute>
-        }
+        <Route
+          path="/superadmin/school/:id"
+          element={
+            <RoleProtectedRoute allowedRoles={["SUPER_ADMIN"]}>
+              <Suspense fallback={<div>Loading...</div>}>
+                <SchoolOverviewPage />
+              </Suspense>
+            </RoleProtectedRoute>
+          }
         />
-
       </Route>
 
       <Route

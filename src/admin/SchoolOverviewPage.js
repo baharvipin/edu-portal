@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from "react";
-import {useParams} from "react-router-dom"
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import {
   Box,
   Tabs,
@@ -14,7 +14,7 @@ import {
   Chip,
   Accordion,
   AccordionSummary,
-  AccordionDetails
+  AccordionDetails,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import useFetch from "../hooks/useFetch";
@@ -39,7 +39,7 @@ export default function SchoolOverviewPage() {
   const [students, setStudents] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [classes, setClasses] = useState([]);
- const { id } = useParams();
+  const { id } = useParams();
   const { data: dashboardRes, loading } = useFetch(
     `/api/school/${id}/overview`,
   );
@@ -47,13 +47,12 @@ export default function SchoolOverviewPage() {
   useEffect(() => {
     if (dashboardRes) {
       console.log("result dashboard", dashboardRes);
-      setTeachers(dashboardRes?.teachers?? []);
-      setStudents(dashboardRes?.students??[]);
-      setSubjects(dashboardRes?.subjects??[]);
-      setClasses(dashboardRes?.classes??[]);
+      setTeachers(dashboardRes?.teachers ?? []);
+      setStudents(dashboardRes?.students ?? []);
+      setSubjects(dashboardRes?.subjects ?? []);
+      setClasses(dashboardRes?.classes ?? []);
     }
   }, [dashboardRes]);
- 
 
   return (
     <Paper sx={{ p: 3 }}>
@@ -80,7 +79,7 @@ export default function SchoolOverviewPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {teachers.map(t => (
+            {teachers.map((t) => (
               <TableRow key={t.id}>
                 <TableCell>{t.fullName}</TableCell>
                 <TableCell>{t.email}</TableCell>
@@ -107,9 +106,11 @@ export default function SchoolOverviewPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {students.map(s => (
+            {students.map((s) => (
               <TableRow key={s.id}>
-                <TableCell>{s.firstName} {s.lastName}</TableCell>
+                <TableCell>
+                  {s.firstName} {s.lastName}
+                </TableCell>
                 <TableCell>{s.email}</TableCell>
                 <TableCell>{s.phone}</TableCell>
                 <TableCell>{s.parentName}</TableCell>
@@ -132,7 +133,7 @@ export default function SchoolOverviewPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {subjects.map(sub => (
+            {subjects.map((sub) => (
               <TableRow key={sub.id}>
                 <TableCell>{sub.code}</TableCell>
                 <TableCell>{sub.name}</TableCell>
@@ -144,12 +145,10 @@ export default function SchoolOverviewPage() {
 
       {/* ---------------- CLASSES & SECTIONS ---------------- */}
       <TabPanel value={tab} index={3}>
-        {classes.map(cls => (
+        {classes.map((cls) => (
           <Accordion key={cls.id}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography fontWeight={600}>
-                {cls.displayName}
-              </Typography>
+              <Typography fontWeight={600}>{cls.displayName}</Typography>
             </AccordionSummary>
             <AccordionDetails>
               {cls.sections.length ? (
@@ -161,7 +160,7 @@ export default function SchoolOverviewPage() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {cls.sections.map(sec => (
+                    {cls.sections.map((sec) => (
                       <TableRow key={sec.id}>
                         <TableCell>{sec.name}</TableCell>
                         <TableCell>

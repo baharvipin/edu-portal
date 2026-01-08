@@ -77,8 +77,8 @@ function SuperAdminDashboard() {
     setModalOpen(true);
   };
 
-   const handleView = (school) => {
-    navigate(`/admin/${school?.id}`, { replace: true });
+  const handleView = (school) => {
+    navigate(`/superadmin/school/${school?.id}`, { replace: true });
   };
 
   const handleClose = () => {
@@ -310,7 +310,7 @@ function SuperAdminDashboard() {
                       Action
                     </Button>
 
-                     <Button
+                    <Button
                       variant="outlined"
                       size="small"
                       onClick={() => handleView(school)}
