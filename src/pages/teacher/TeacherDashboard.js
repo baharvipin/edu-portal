@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 export default function TeacherDashboard() {
   const [dashboard, setDashboard] = useState({});
+  const { teacherId } = useParams();
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_BASE_URL}/api/teachers/dashboard`, {
+    fetch(`${process.env.REACT_APP_API_BASE_URL}/api/teachers/dashboard/${teacherId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("authToken")}`,
       },
     })
       .then((res) => res.json())
       .then(setDashboard);
-  }, []);
+  }, [teacherId]);
 
   if (!dashboard) {
     return <p className="text-gray-500">Loading dashboard...</p>;

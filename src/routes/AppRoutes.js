@@ -143,7 +143,7 @@ function AppRoutes() {
         />
 
         <Route
-          path="/teacher/dashboard"
+          path="/teacher/dashboard/:teacherId"
           element={
             <RoleProtectedRoute allowedRoles={["TEACHER"]}>
               <Suspense fallback={<div>Loading...</div>}>

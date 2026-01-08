@@ -191,7 +191,7 @@ function LoginPage() {
         return;
       }
       if (user.userRole === "TEACHER") {
-        navigate("/teacher/dashboard", { replace: true });
+        navigate(`/teacher/dashboard/${user?.teacherId}`, { replace: true });
         return;
       }
 
