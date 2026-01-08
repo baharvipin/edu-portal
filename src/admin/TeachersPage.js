@@ -225,8 +225,8 @@ function TeachersPage() {
                 <TableCell>
                   {teacher?.subjects?.map((s) => (
                     <Chip
-                      key={s.id}
-                      label={s.name}
+                      key={s.subject.id}
+                      label={s.subject.name}
                       size="small"
                       sx={{ mr: 0.5 }}
                     />

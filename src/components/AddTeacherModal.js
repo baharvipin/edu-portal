@@ -50,7 +50,7 @@ function AddTeacherModal({
   useEffect(() => {
     if (editTeacher) {
       console.log("check if", editTeacher);
-      const subjectNames = editTeacher?.subjects?.map((s) => s.name);
+      const subjectNames = editTeacher?.subjects?.map((s) => s.subject.name);
 
       setForm({
         name: editTeacher.fullName,
