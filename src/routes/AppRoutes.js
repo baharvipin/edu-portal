@@ -22,6 +22,7 @@ const TeachersPage = lazy(() => import("../admin/TeachersPage"));
 const SubjectsPage = lazy(() => import("../admin/SubjectsPage"));
 const StudentsPage = lazy(() => import("../admin/StudentsPage"));
 const ClassWiseStudents = lazy(() => import("../admin/ClassWiseStudents"));
+const SchoolOverviewPage =lazy(() => import("../admin/SchoolOverviewPage"));
 
 function ProtectedRoute({ children }) {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -174,6 +175,17 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
+        <Route 
+        path="/admin/:id"
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<div>Loading...</div>}>
+            <SchoolOverviewPage />
+            </Suspense>
+          </ProtectedRoute>
+        }
+        />
+
       </Route>
 
       <Route

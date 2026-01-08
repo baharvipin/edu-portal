@@ -1,5 +1,6 @@
 // SuperAdminDashboard.jsx
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -29,6 +30,7 @@ const modalStyle = {
 };
 
 function SuperAdminDashboard() {
+  const navigate = useNavigate();
   const [schools, setSchools] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -69,10 +71,14 @@ function SuperAdminDashboard() {
     fetchSchools();
   }, []);
 
-  const handleView = (school) => {
+  const handleAction = (school) => {
     console.log("Viewing school:", school);
     setSelectedSchool(school);
     setModalOpen(true);
+  };
+
+   const handleView = (school) => {
+    navigate(`/admin/${school?.id}`, { replace: true });
   };
 
   const handleClose = () => {
@@ -299,9 +305,17 @@ function SuperAdminDashboard() {
                     <Button
                       variant="outlined"
                       size="small"
+                      onClick={() => handleAction(school)}
+                    >
+                      Action
+                    </Button>
+
+                     <Button
+                      variant="outlined"
+                      size="small"
                       onClick={() => handleView(school)}
                     >
-                      View
+                      View Details
                     </Button>
                   </TableCell>
                 </TableRow>
