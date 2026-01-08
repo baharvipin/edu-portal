@@ -4,6 +4,7 @@ import ProtectedLayout from "../components/ProtectedLayout";
 import RoleProtectedRoute from "../components/RoleProtectedRoute";
 
 const LoginPage = lazy(() => import("../login/LoginPage"));
+const ChangePasswordPage = lazy(() => import("../login/ChangePasswordPage"));
 const RegistrationPage = lazy(() => import("../registration/RegistrationPage"));
 const SchoolProfilePage = lazy(
   () => import("../registration/SchoolProfilePage"),
@@ -24,6 +25,13 @@ const SubjectsPage = lazy(() => import("../admin/SubjectsPage"));
 const StudentsPage = lazy(() => import("../admin/StudentsPage"));
 const ClassWiseStudents = lazy(() => import("../admin/ClassWiseStudents"));
 const SchoolOverviewPage = lazy(() => import("../admin/SchoolOverviewPage"));
+
+const TeacherDashboard = lazy(
+  () => import("../pages/teacher/TeacherDashboard"),
+);
+// const TeacherProfile = lazy(() => import("../pages/teacher/TeacherProfile"));
+// const TeacherSubjects = lazy(() => import("../pages/teacher/TeacherSubjects"));
+// const TeacherStudents = lazy(() => import("../pages/teacher/TeacherStudents"));
 
 function ProtectedRoute({ children }) {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -72,6 +80,15 @@ function AppRoutes() {
           </Suspense>
         }
       />
+      <Route
+        path="/change-password"
+        element={
+          <Suspense fallback={<div>Loading...</div>}>
+            <ChangePasswordPage />
+          </Suspense>
+        }
+      />
+
       <Route
         path="/account/suspended"
         element={
@@ -126,6 +143,17 @@ function AppRoutes() {
         />
 
         <Route
+          path="/teacher/dashboard"
+          element={
+            <RoleProtectedRoute allowedRoles={["TEACHER"]}>
+              <Suspense fallback={<div>Loading...</div>}>
+                <TeacherDashboard />
+              </Suspense>
+            </RoleProtectedRoute>
+          }
+        />
+
+        <Route
           path="/school/profile"
           element={
             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
@@ -138,7 +166,7 @@ function AppRoutes() {
         <Route
           path="/dashboard"
           element={
-           <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
               <Suspense fallback={<div>Loading...</div>}>
                 <DashboardPage />
               </Suspense>
@@ -180,7 +208,7 @@ function AppRoutes() {
         <Route
           path="/admin/classes"
           element={
-             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
               <Suspense fallback={<div>Loading...</div>}>
                 <ClassWiseStudents />
               </Suspense>

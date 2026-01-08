@@ -62,12 +62,12 @@ function LoginPage() {
       newErrors.email = "Please enter a valid email address";
     }
 
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (!validatePassword(formData.password)) {
-      newErrors.password =
-        "Password must be at least 8 characters and include uppercase, lowercase, and a number";
-    }
+    // if (!formData.password) {
+    //   newErrors.password = "Password is required";
+    // } else if (!validatePassword(formData.password)) {
+    //   newErrors.password =
+    //     "Password must be at least 8 characters and include uppercase, lowercase, and a number";
+    // }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -143,6 +143,23 @@ function LoginPage() {
           data.profileCompleted ? "true" : "false",
         );
       }
+      if (data?.mustChangePassword === true) {
+        const confirmChange = window.confirm(
+          "You must change your temporary password before proceeding. Do you want to change it now?",
+        );
+
+        if (confirmChange) {
+          localStorage.setItem("userId", data.userId);
+          localStorage.setItem("role", data.role);
+          // User clicked OK → redirect to change password page
+          navigate("/change-password", { replace: true });
+        } else {
+          // User clicked Cancel → stay on the current page
+          // Optionally, you can also show a toast or just do nothing
+          console.log("User chose not to change password yet.");
+        }
+      }
+
       // Redirect based on user role and status
       const { user, school } = data;
 
@@ -171,6 +188,10 @@ function LoginPage() {
       // Role-based routing
       if (user.userRole === "SUPER_ADMIN") {
         navigate("/superadmin/profile", { replace: true });
+        return;
+      }
+      if (user.userRole === "TEACHER") {
+        navigate("/teacher/dashboard", { replace: true });
         return;
       }
 
