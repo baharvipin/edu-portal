@@ -14,7 +14,7 @@ import {
   Stack,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import AddTeacherModal from "./AddTeacherModal";
+import AddTeacherModal from "../components/AddTeacherModal";
 import useFetch from "../hooks/useFetch";
 import { parseJwt } from "../utility/commonTask";
 

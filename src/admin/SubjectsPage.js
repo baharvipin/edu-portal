@@ -10,7 +10,7 @@ import {
   TableCell,
   TableBody,
 } from "@mui/material";
-import AddSubjectModal from "../admin/AddSubjectModal";
+import AddSubjectModal from "../components/AddSubjectModal";
 import useFetch from "../hooks/useFetch";
 import { parseJwt } from "../utility/commonTask";
 

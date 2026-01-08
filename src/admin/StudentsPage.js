@@ -12,7 +12,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import AddStudentModal from "../admin/AddStudentModal";
+import AddStudentModal from "../components/AddStudentModal";
 import useFetch from "../hooks/useFetch";
 import { parseJwt } from "../utility/commonTask";
 import BulkStudentUpload from "../components/BulkStudentUpload";
