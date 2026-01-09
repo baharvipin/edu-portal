@@ -30,7 +30,7 @@ export default function TeacherAssignments() {
   const [open, setOpen] = useState(false);
   const [editAssignment, setEditAssignment] = useState(null);
   const [submitPayload, setSubmitPayload] = useState(null);
-const [refreshKey, setRefreshKey] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   /* ---------------- FETCH ASSIGNMENTS ---------------- */
 
@@ -40,7 +40,7 @@ const [refreshKey, setRefreshKey] = useState(0);
     error,
   } = useFetch(
     `/api/teachers/${schoolId}/teacher-assignments`,
-   { refreshKey },  
+    { refreshKey },
     !!schoolId,
   );
 
@@ -53,14 +53,40 @@ const [refreshKey, setRefreshKey] = useState(0);
   console.log("assignmentsResponse", assignmentsResponse);
   /* ---------------- CREATE / UPDATE ---------------- */
 
+  // const { data: saveResponse, loading: saving } = useFetch(
+  //   submitPayload?.mode === "edit"
+  //     ? `/api/teachers/assignments/${submitPayload.assignmentId}`
+  //     : `/api/teachers/${submitPayload?.teacherId}/assignments`,
+  //   submitPayload
+  //     ? {
+  //         method: submitPayload.mode === "edit" ? "PUT" : "POST",
+  //         body: submitPayload,
+  //       }
+  //     : null,
+  //   submitPayload !== null,
+  // );
+
+  const METHOD_MODE= {
+    EDIT: "edit",
+    DELETE: "delete",
+    CREATE: "create",
+  };
+
   const { data: saveResponse, loading: saving } = useFetch(
     submitPayload?.mode === "edit"
       ? `/api/teachers/assignments/${submitPayload.assignmentId}`
-      : `/api/teachers/${submitPayload?.teacherId}/assignments`,
+      : submitPayload?.mode === "delete"
+        ? `/api/teachers/assignments/delete/${submitPayload.assignmentId}`
+        : `/api/teachers/${submitPayload?.teacherId}/assignments`,
     submitPayload
       ? {
-          method: submitPayload.mode === "edit" ? "PUT" : "POST",
-          body: submitPayload,
+          method:
+            submitPayload.mode === "edit"
+              ? "PUT"
+              : submitPayload.mode === "delete"
+                ? "DELETE"
+                : "POST",
+          body: submitPayload.mode === "delete" ? null : submitPayload,
         }
       : null,
     submitPayload !== null,
@@ -68,17 +94,7 @@ const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     if (saveResponse) {
-      // if (submitPayload.mode === "edit") {
-      //   setAssignments((prev) =>
-      //     prev.map((a) =>
-      //       a.id === saveResponse.assignment.id ? saveResponse.assignment : a,
-      //     ),
-      //   );
-      // } else {
-      //   setAssignments((prev) => [...prev, saveResponse.assignment]);
-      // }
-  // 🔥 FORCE REFETCH latest assignments
-  setRefreshKey(prev => prev + 1);
+      setRefreshKey((prev) => prev + 1);
       setOpen(false);
       setEditAssignment(null);
       setSubmitPayload(null);
@@ -115,11 +131,19 @@ const [refreshKey, setRefreshKey] = useState(0);
     } else {
       setSubmitPayload(payload);
     }
-  }; 
+  };
 
+  const handleDelete = (assignmentId) => {
+    if (!window.confirm("Are you sure you want to delete this assignment?"))
+      return;
+
+    setSubmitPayload({
+      assignmentId,
+      mode: "delete",
+    });
+  };
 
   const flattenedAssignments = assignments.flatMap((item) =>
-    
     item.teacher.assignments.map((a) => ({
       id: a.id,
       teacherId: item.teacher.id,
@@ -183,13 +207,23 @@ const [refreshKey, setRefreshKey] = useState(0);
                   />
                 </TableCell>
                 <TableCell align="right">
-                  <Button
-                    size="small"
-                    startIcon={<EditIcon />}
-                    onClick={() => handleEdit(a)}
-                  >
-                    Edit
-                  </Button>
+                  <Stack direction="row" spacing={1} justifyContent="flex-end">
+                    <Button
+                      size="small"
+                      startIcon={<EditIcon />}
+                      onClick={() => handleEdit(a)}
+                    >
+                      Edit
+                    </Button>
+
+                    <Button
+                      size="small"
+                      color="error"
+                      onClick={() => handleDelete(a.id)}
+                    >
+                      Delete
+                    </Button>
+                  </Stack>
                 </TableCell>
               </TableRow>
             ))}
