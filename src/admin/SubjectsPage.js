@@ -17,16 +17,32 @@ import { parseJwt } from "../utility/commonTask";
 function SubjectsPage() {
   const [open, setOpen] = useState(false);
   const [subjects, setSubjects] = useState([]);
-  const [selectedSubject, setSelectedSubject] = useState({});
+  const [selectedSubject, setSelectedSubject] = useState(null);
 
   const [submitPayload, setSubmitPayload] = useState(null);
   const [submitPayloadEdit, setSubmitPayloadEdit] = useState(null);
 
   const [subjectsLoading, setSubjectsLoading] = useState(false);
   const [subjectsError, setSubjectsError] = useState(null);
-
+const [classes, setClasses] = useState([]);
+const [refreshStudents, setRefreshStudents] = useState(true);
   const token = localStorage.getItem("authToken");
   const tokenDetails = parseJwt(token);
+
+
+   /** Fetch classes */
+    const { data: classRes } = useFetch(
+      `/api/classes/${tokenDetails.schoolId}`,
+      {},
+      !!tokenDetails?.schoolId && refreshStudents,
+    );
+  
+    useEffect(() => {
+      if (classRes) {
+        setClasses(classRes.classes ?? []);
+        setRefreshStudents(false); // stop refetch
+      }
+    }, [classRes]);
 
   /* =======================
      ADD SUBJECT
@@ -57,12 +73,12 @@ function SubjectsPage() {
   ======================= */
 
   const { data: subjectEditResponse } = useFetch(
-    `/api/subjects/${selectedSubject.id}`,
+    `/api/subjects/${selectedSubject?.id}`,
     {
       method: "PUT",
       body: submitPayloadEdit,
     },
-    submitPayloadEdit !== null,
+     !!submitPayloadEdit && !!selectedSubject?.id
   );
 
   useEffect(() => {
@@ -87,7 +103,7 @@ function SubjectsPage() {
       setSubjectsError(null);
 
       const token = localStorage.getItem("authToken");
-
+// /api/classes/${tokenDetails.schoolId}
       const response = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/api/subjects/${tokenDetails.schoolId}`,
         {
@@ -124,34 +140,44 @@ function SubjectsPage() {
   ======================= */
 
   const handleAddSubject = (data) => {
-    const payload = {
-      name: data.name,
-      code: data.code,
-      schoolId: tokenDetails.schoolId,
-    };
-
-    if (data.id) {
-      payload.id = data.id;
-      setSubmitPayloadEdit(payload);
-    } else {
-      setSubmitPayload(payload);
-    }
-
-    setOpen(false);
+  const payload = {
+    name: data.name,
+    code: data.code,
+    classId: data.classId,
+    sectionId: data.sectionId,
+    schoolId: tokenDetails.schoolId,
   };
 
+  if (data.id) {
+    // ✅ UPDATE
+    setSubmitPayloadEdit(payload);
+    setSelectedSubject({ id: data.id }); // keep id
+  } else {
+    // ✅ CREATE
+    setSubmitPayload(payload);
+  }
+
+  setOpen(false);
+};
+
+
   const handleEditClick = (subject) => {
+    console.log("edit", subject);
     setSelectedSubject(subject);
     setOpen(true);
   };
 
-  const handleDeleteSubject = async (id) => {
+  const handleDeleteSubject = async (subject) => {
     if (!window.confirm("Are you sure you want to delete this subject?"))
       return;
 
     try {
-      await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/subjects/${id}`, {
-        method: "DELETE",
+      await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/subjects/${subject.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isActive: true, schoolId: tokenDetails.schoolId,  }),
       });
 
       fetchAllSubjects();
@@ -207,7 +233,7 @@ function SubjectsPage() {
                   <Button
                     size="small"
                     color="error"
-                    onClick={() => handleDeleteSubject(subject.id)}
+                    onClick={() => handleDeleteSubject(subject)}
                   >
                     Delete
                   </Button>
@@ -229,6 +255,7 @@ function SubjectsPage() {
         }}
         onSubmit={handleAddSubject}
         selectedSubject={selectedSubject}
+        classes={classes}
       />
     </Box>
   );
