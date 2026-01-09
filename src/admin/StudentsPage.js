@@ -92,6 +92,11 @@ function StudentsPage() {
   const refetchStudents = () => {
     setRefreshStudents(true); //  refetch from API
   };
+  const getSectionName = (sections, sectionId) => {
+    const section = sections.find((sec) => sec.id === sectionId);
+    return section ? section.name : "";
+  };
+  
   return (
     <Box p={3}>
       <BulkStudentUpload
@@ -147,6 +152,9 @@ function StudentsPage() {
                           <strong>Class</strong>
                         </TableCell>
                         <TableCell>
+                          <strong>Section</strong>
+                        </TableCell>
+                        <TableCell>
                           <strong>Email</strong>
                         </TableCell>
                         <TableCell>
@@ -164,6 +172,9 @@ function StudentsPage() {
                           </TableCell>
                           <TableCell>
                             {c.id == student.classId ? c.displayName : ""}
+                          </TableCell>
+                          <TableCell>
+                            {getSectionName(c.sections, student.sectionId)}
                           </TableCell>
                           <TableCell>{student.email}</TableCell>
                           <TableCell>
