@@ -52,7 +52,7 @@ export default function useFetch(url, options = {}, enabled = true) {
     return () => {
       isMounted = false;
     };
-  }, [url, enabled]);
+  }, [url, enabled, options?.refreshKey]); // Added options.refreshKey as dependency
 
   return { data, loading, error };
 }

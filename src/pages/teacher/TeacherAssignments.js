@@ -30,6 +30,7 @@ export default function TeacherAssignments() {
   const [open, setOpen] = useState(false);
   const [editAssignment, setEditAssignment] = useState(null);
   const [submitPayload, setSubmitPayload] = useState(null);
+const [refreshKey, setRefreshKey] = useState(0);
 
   /* ---------------- FETCH ASSIGNMENTS ---------------- */
 
@@ -39,7 +40,7 @@ export default function TeacherAssignments() {
     error,
   } = useFetch(
     `/api/teachers/${schoolId}/teacher-assignments`,
-    undefined,
+   { refreshKey },  
     !!schoolId,
   );
 
@@ -54,7 +55,7 @@ export default function TeacherAssignments() {
 
   const { data: saveResponse, loading: saving } = useFetch(
     submitPayload?.mode === "edit"
-      ? `/api/assignments/${submitPayload.assignmentId}`
+      ? `/api/teachers/assignments/${submitPayload.assignmentId}`
       : `/api/teachers/${submitPayload?.teacherId}/assignments`,
     submitPayload
       ? {
@@ -67,16 +68,17 @@ export default function TeacherAssignments() {
 
   useEffect(() => {
     if (saveResponse) {
-      if (submitPayload.mode === "edit") {
-        setAssignments((prev) =>
-          prev.map((a) =>
-            a.id === saveResponse.assignment.id ? saveResponse.assignment : a,
-          ),
-        );
-      } else {
-        setAssignments((prev) => [...prev, saveResponse.assignment]);
-      }
-
+      // if (submitPayload.mode === "edit") {
+      //   setAssignments((prev) =>
+      //     prev.map((a) =>
+      //       a.id === saveResponse.assignment.id ? saveResponse.assignment : a,
+      //     ),
+      //   );
+      // } else {
+      //   setAssignments((prev) => [...prev, saveResponse.assignment]);
+      // }
+  // 🔥 FORCE REFETCH latest assignments
+  setRefreshKey(prev => prev + 1);
       setOpen(false);
       setEditAssignment(null);
       setSubmitPayload(null);

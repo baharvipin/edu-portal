@@ -120,6 +120,7 @@ export default function AssignModal({
           <FormControl fullWidth error={!!errors.teacherId}>
             <InputLabel>Teacher</InputLabel>
             <Select
+             disabled={editData ? true : false}
               value={teacherId}
               label="Teacher"
               onChange={(e) => {
