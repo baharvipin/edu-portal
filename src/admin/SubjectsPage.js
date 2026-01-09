@@ -202,7 +202,13 @@ function SubjectsPage() {
             Subject Management
           </Typography>
 
-          <Button variant="contained" onClick={() => setOpen(true)}>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setOpen(true);
+              setSelectedSubject(null);
+            }}
+          >
             Add Subject
           </Button>
         </Box>

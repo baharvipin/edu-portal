@@ -276,6 +276,7 @@ function AddSubjectModal({
           <FormControl fullWidth error={!!errors.classId}>
             <InputLabel>Class</InputLabel>
             <Select
+              disabled={selectedSubject}
               name="classId"
               value={form.classId}
               label="Class"
@@ -298,6 +299,7 @@ function AddSubjectModal({
           >
             <InputLabel>Section</InputLabel>
             <Select
+              disabled={selectedSubject}
               name="sectionId"
               value={form.sectionId}
               label="Section"
