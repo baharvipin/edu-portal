@@ -6,11 +6,14 @@ export default function TeacherDashboard() {
   const { teacherId } = useParams();
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_BASE_URL}/api/teachers/dashboard/${teacherId}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+    fetch(
+      `${process.env.REACT_APP_API_BASE_URL}/api/teachers/dashboard/${teacherId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
       },
-    })
+    )
       .then((res) => res.json())
       .then(setDashboard);
   }, [teacherId]);

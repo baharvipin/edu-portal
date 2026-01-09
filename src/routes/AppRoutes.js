@@ -25,6 +25,9 @@ const SubjectsPage = lazy(() => import("../admin/SubjectsPage"));
 const StudentsPage = lazy(() => import("../admin/StudentsPage"));
 const ClassWiseStudents = lazy(() => import("../admin/ClassWiseStudents"));
 const SchoolOverviewPage = lazy(() => import("../admin/SchoolOverviewPage"));
+const TeacherAssignments = lazy(
+  () => import("../pages/teacher/TeacherAssignments"),
+);
 
 const TeacherDashboard = lazy(
   () => import("../pages/teacher/TeacherDashboard"),
@@ -141,7 +144,16 @@ function AppRoutes() {
             </RoleProtectedRoute>
           }
         />
-
+        <Route
+          path="/admin/teachers/assign"
+          element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <Suspense fallback={<div>Loading...</div>}>
+                <TeacherAssignments />
+              </Suspense>
+            </RoleProtectedRoute>
+          }
+        />
         <Route
           path="/teacher/dashboard/:teacherId"
           element={

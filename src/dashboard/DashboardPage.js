@@ -81,6 +81,13 @@ function DashboardPage() {
                 onClick={() => navigate("/admin/teachers")}
               />
             </Grid>
+            <Grid item xs={12} md={6}>
+              <ActionCard
+                title="Assign Teachers"
+                description="Assign Teachers to Classes and Subjects and Sections"
+                onClick={() => navigate("/admin/teachers/assign")}
+              />
+            </Grid>
 
             <Grid item xs={12} md={6}>
               <ActionCard
