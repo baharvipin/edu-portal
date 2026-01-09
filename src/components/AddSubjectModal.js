@@ -34,7 +34,6 @@
 //       !!schoolId,
 //     );
 
-
 //   useEffect(() => {
 //     setForm(selectedSubject);
 //   }, [selectedSubject]);
@@ -119,8 +118,6 @@
 
 // export default AddSubjectModal;
 
-
-
 import React, { useEffect, useState } from "react";
 import {
   Modal,
@@ -153,7 +150,6 @@ function AddSubjectModal({
   onClose,
   onSubmit,
   selectedSubject,
-  schoolId,
   classes,
 }) {
   /* ---------------- STATE ---------------- */
@@ -168,27 +164,37 @@ function AddSubjectModal({
   const [sections, setSections] = useState([]);
 
   /* ---------------- LOAD EDIT DATA ---------------- */
- useEffect(() => {
-  if (!selectedSubject) {
+  useEffect(() => {
+    if (!selectedSubject) {
+      setForm({
+        id: null,
+        name: "",
+        code: "",
+        classId: "",
+        sectionId: "",
+      });
+      return;
+    }
+    console.log("selectedSubject", selectedSubject, classes);
+
     setForm({
-      id: null,
-      name: "",
-      code: "",
-      classId: "",
-      sectionId: "",
+      id: selectedSubject?.id,
+      name: selectedSubject?.name || "",
+      code: selectedSubject?.code || "",
+      classId: selectedSubject?.classId || "",
+      sectionId: selectedSubject?.sectionId || "",
     });
-    return;
-  }
 
-  setForm({
-    id: selectedSubject?.id,
-    name: selectedSubject?.name || "",
-    code: selectedSubject?.code || "",
-    classId: selectedSubject?.classId || "",
-    sectionId: selectedSubject?.sectionId || "",
-  });
-}, [selectedSubject]);
-
+    const selectedClass = classes.find(
+      (c) => c.id === selectedSubject?.classId,
+    );
+    console.log(
+      "selectedSubjectselectedSubject",
+      selectedClass,
+      selectedSubject,
+    );
+    setSections(selectedClass ? selectedClass.sections || [] : []);
+  }, [selectedSubject]);
 
   /* ---------------- HANDLERS ---------------- */
   const handleChange = (e) => {
@@ -312,7 +318,7 @@ function AddSubjectModal({
             Cancel
           </Button>
           <Button variant="contained" onClick={handleSubmit}>
-            Save
+            {selectedSubject ? "Update" : "Save"}
           </Button>
         </Stack>
       </Box>

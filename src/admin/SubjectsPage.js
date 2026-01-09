@@ -24,25 +24,24 @@ function SubjectsPage() {
 
   const [subjectsLoading, setSubjectsLoading] = useState(false);
   const [subjectsError, setSubjectsError] = useState(null);
-const [classes, setClasses] = useState([]);
-const [refreshStudents, setRefreshStudents] = useState(true);
+  const [classes, setClasses] = useState([]);
+  const [refreshStudents, setRefreshStudents] = useState(true);
   const token = localStorage.getItem("authToken");
   const tokenDetails = parseJwt(token);
 
+  /** Fetch classes */
+  const { data: classRes } = useFetch(
+    `/api/classes/${tokenDetails.schoolId}`,
+    {},
+    !!tokenDetails?.schoolId && refreshStudents,
+  );
 
-   /** Fetch classes */
-    const { data: classRes } = useFetch(
-      `/api/classes/${tokenDetails.schoolId}`,
-      {},
-      !!tokenDetails?.schoolId && refreshStudents,
-    );
-  
-    useEffect(() => {
-      if (classRes) {
-        setClasses(classRes.classes ?? []);
-        setRefreshStudents(false); // stop refetch
-      }
-    }, [classRes]);
+  useEffect(() => {
+    if (classRes) {
+      setClasses(classRes.classes ?? []);
+      setRefreshStudents(false); // stop refetch
+    }
+  }, [classRes]);
 
   /* =======================
      ADD SUBJECT
@@ -78,7 +77,7 @@ const [refreshStudents, setRefreshStudents] = useState(true);
       method: "PUT",
       body: submitPayloadEdit,
     },
-     !!submitPayloadEdit && !!selectedSubject?.id
+    !!submitPayloadEdit && !!selectedSubject?.id,
   );
 
   useEffect(() => {
@@ -103,7 +102,7 @@ const [refreshStudents, setRefreshStudents] = useState(true);
       setSubjectsError(null);
 
       const token = localStorage.getItem("authToken");
-// /api/classes/${tokenDetails.schoolId}
+      // /api/classes/${tokenDetails.schoolId}
       const response = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/api/subjects/${tokenDetails.schoolId}`,
         {
@@ -140,26 +139,25 @@ const [refreshStudents, setRefreshStudents] = useState(true);
   ======================= */
 
   const handleAddSubject = (data) => {
-  const payload = {
-    name: data.name,
-    code: data.code,
-    classId: data.classId,
-    sectionId: data.sectionId,
-    schoolId: tokenDetails.schoolId,
+    const payload = {
+      name: data.name,
+      code: data.code,
+      classId: data.classId,
+      sectionId: data.sectionId,
+      schoolId: tokenDetails.schoolId,
+    };
+
+    if (data.id) {
+      // ✅ UPDATE
+      setSubmitPayloadEdit(payload);
+      setSelectedSubject({ id: data.id }); // keep id
+    } else {
+      // ✅ CREATE
+      setSubmitPayload(payload);
+    }
+
+    setOpen(false);
   };
-
-  if (data.id) {
-    // ✅ UPDATE
-    setSubmitPayloadEdit(payload);
-    setSelectedSubject({ id: data.id }); // keep id
-  } else {
-    // ✅ CREATE
-    setSubmitPayload(payload);
-  }
-
-  setOpen(false);
-};
-
 
   const handleEditClick = (subject) => {
     console.log("edit", subject);
@@ -172,13 +170,19 @@ const [refreshStudents, setRefreshStudents] = useState(true);
       return;
 
     try {
-      await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/subjects/${subject.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+      await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/subjects/${subject.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            isActive: true,
+            schoolId: tokenDetails.schoolId,
+          }),
         },
-        body: JSON.stringify({ isActive: true, schoolId: tokenDetails.schoolId,  }),
-      });
+      );
 
       fetchAllSubjects();
     } catch (err) {
@@ -216,6 +220,12 @@ const [refreshStudents, setRefreshStudents] = useState(true);
                 <strong>Code</strong>
               </TableCell>
               <TableCell>
+                <strong>Class</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Section</strong>
+              </TableCell>
+              <TableCell>
                 <strong>Actions</strong>
               </TableCell>
             </TableRow>
@@ -223,9 +233,11 @@ const [refreshStudents, setRefreshStudents] = useState(true);
 
           <TableBody>
             {subjects.map((subject) => (
-              <TableRow key={subject.id}>
-                <TableCell>{subject.name}</TableCell>
-                <TableCell>{subject.code}</TableCell>
+              <TableRow key={subject?.id}>
+                <TableCell>{subject?.name}</TableCell>
+                <TableCell>{subject?.code}</TableCell>
+                <TableCell>{subject?.class?.displayName}</TableCell>
+                <TableCell>{subject?.section?.name}</TableCell>
                 <TableCell>
                   <Button size="small" onClick={() => handleEditClick(subject)}>
                     Edit

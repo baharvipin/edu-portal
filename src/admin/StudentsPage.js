@@ -96,7 +96,7 @@ function StudentsPage() {
     const section = sections.find((sec) => sec.id === sectionId);
     return section ? section.name : "";
   };
-  
+
   return (
     <Box p={3}>
       <BulkStudentUpload

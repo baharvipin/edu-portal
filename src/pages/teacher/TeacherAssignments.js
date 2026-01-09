@@ -66,7 +66,7 @@ export default function TeacherAssignments() {
   //   submitPayload !== null,
   // );
 
-  const METHOD_MODE= {
+  const METHOD_MODE = {
     EDIT: "edit",
     DELETE: "delete",
     CREATE: "create",
