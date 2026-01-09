@@ -113,16 +113,14 @@ export default function TeacherAssignments() {
     } else {
       setSubmitPayload(payload);
     }
-  };
-
-  console.log("RAW assignments:", assignments);
-console.log("Is array?", Array.isArray(assignments));
+  }; 
 
 
   const flattenedAssignments = assignments.flatMap((item) =>
     
     item.teacher.assignments.map((a) => ({
       id: a.id,
+      teacherId: item.teacher.id,
       teacherName: item.teacher.fullName,
       class: a.class,
       section: a.section,

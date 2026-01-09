@@ -60,11 +60,12 @@ export default function AssignModal({
   /* ---------------- PREFILL EDIT ---------------- */
 
   useEffect(() => {
+    console.log("editData in assign modal", editData);
     if (editData) {
-      setTeacherId(editData.teacherId);
-      setClassId(editData.classId);
-      setSectionId(editData.sectionId);
-      setSubjectId(editData.subjectId);
+      setTeacherId(editData?.teacherId);
+      setClassId(editData?.class?.id);
+      setSectionId(editData?.section?.id);
+      setSubjectId(editData?.subject?.id);
     } else {
       resetForm();
     }
