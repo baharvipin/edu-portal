@@ -194,6 +194,10 @@ function LoginPage() {
         navigate(`/teacher/dashboard/${user?.teacherId}`, { replace: true });
         return;
       }
+      if (user.userRole === "STUDENT") {
+        navigate(`/student/dashboard/${user?.studentId}`, { replace: true });
+        return;
+      }
 
       if (user.userRole === "ADMIN") {
         switch (school.status) {
