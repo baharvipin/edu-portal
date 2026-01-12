@@ -1,8 +1,31 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import {
+  Container,
+  Grid,
+  Typography,
+  Card,
+  CardContent,
+  Box,
+  Avatar,
+  Chip,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Divider,
+  LinearProgress,
+  Paper,
+  Stack,
+} from "@mui/material";
+
+// Icons
+import BookIcon from "@mui/icons-material/MenuBook";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import HistoryIcon from "@mui/icons-material/History";
 
 export default function TeacherDashboard() {
-  const [dashboard, setDashboard] = useState({});
+  const [dashboard, setDashboard] = useState(null);
   const { teacherId } = useParams();
 
   useEffect(() => {
@@ -12,93 +35,186 @@ export default function TeacherDashboard() {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
-      },
+      }
     )
       .then((res) => res.json())
       .then(setDashboard);
   }, [teacherId]);
 
   if (!dashboard) {
-    return <p className="text-gray-500">Loading dashboard...</p>;
+    return (
+      <Box sx={{ width: "100%", mt: 4 }}>
+        <LinearProgress />
+        <Typography align="center" sx={{ mt: 2, color: "text.secondary" }}>
+          Loading your dashboard...
+        </Typography>
+      </Box>
+    );
   }
 
+  const { teacher, summary, myClasses, pendingActions, recentActivities } = dashboard;
+
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">
-          Welcome, {dashboard.teacherName} 👋
-        </h1>
-        <p className="text-gray-500 mt-1">
-          Here’s what’s happening in your classes today
-        </p>
-      </div>
+    <Container maxWidth="lg" sx={{ py: 6 }}>
+      {/* Header Section */}
+      <Box sx={{ mb: 5 }}>
+        <Typography variant="h4" fontWeight="800" gutterBottom>
+          Welcome back, {teacher.fullName} 👋
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Here is a summary of your academic activities for today.
+        </Typography>
+      </Box>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <StatCard
-          title="Subjects"
-          value={dashboard.subjectCount}
-          icon="📘"
-          color="bg-blue-50"
-        />
-        <StatCard
-          title="Students"
-          value={dashboard.studentCount}
-          icon="👩‍🎓"
-          color="bg-green-50"
-        />
-        <StatCard
-          title="School"
-          value={dashboard.schoolName}
-          icon="🏫"
-          color="bg-purple-50"
-        />
-      </div>
+      <Grid container spacing={4}>
+        {/* Quick Stats */}
+        <Grid item xs={12} md={6}>
+          <StatCard
+            title="Total Subjects"
+            value={summary.subjectsCount}
+            icon={<BookIcon fontSize="large" />}
+            color="#1976d2"
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <StatCard
+            title="Total Students"
+            value={summary.studentsCount}
+            color="#2e7d32"
+          />
+        </Grid>
 
-      {/* Subjects */}
-      <section>
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">
-          My Subjects
-        </h2>
+        {/* My Subjects Grid */}
+        <Grid item xs={12}>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+            Current Subjects
+          </Typography>
+          <Grid container spacing={3}>
+            {myClasses.length === 0 ? (
+              <Grid item xs={12}>
+                <Paper variant="outlined" sx={{ p: 3, textAlign: "center" }}>
+                  <Typography color="text.secondary">No subjects assigned yet.</Typography>
+                </Paper>
+              </Grid>
+            ) : (
+              myClasses.map(({ subject }) => (
+                <Grid item xs={12} sm={6} md={4} key={subject.id}>
+                  <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3, transition: '0.3s', '&:hover': { boxShadow: 3 } }}>
+                    <CardContent>
+                      <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                        <Avatar sx={{ bgcolor: "primary.light" }}>
+                          <BookIcon />
+                        </Avatar>
+                        <Box>
+                          <Typography variant="subtitle1" fontWeight="bold">
+                            {subject.name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Code: {subject.code}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                      <Chip
+                        label={subject.isActive ? "Active" : "Inactive"}
+                        size="small"
+                        color={subject.isActive ? "success" : "default"}
+                        variant="soft"
+                      />
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))
+            )}
+          </Grid>
+        </Grid>
 
-        {dashboard?.subjects?.length === 0 ? (
-          <p className="text-gray-500">No subjects assigned yet.</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {dashboard?.subjects?.map((s) => (
-              <div
-                key={s.id}
-                className="bg-white rounded-lg shadow-sm p-5 border hover:shadow-md transition"
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">📘</span>
-                  <h3 className="text-lg font-semibold text-gray-700">
-                    {s.name}
-                  </h3>
-                </div>
-                <p className="text-sm text-gray-500">Assigned subject</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-    </div>
+        {/* Action Items & Recent Activity */}
+        <Grid item xs={12} md={5}>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+            Action Required
+          </Typography>
+          <Stack spacing={2}>
+            <StatCard
+              title="Attendance Pending"
+              value={pendingActions.attendancePending}
+              icon={<AssignmentIcon />}
+              color="#ed6c02"
+              small
+            />
+            <StatCard
+              title="Assignments to Review"
+              value={pendingActions.assignmentsToReview}
+              color="#d32f2f"
+              small
+            />
+          </Stack>
+        </Grid>
+
+        <Grid item xs={12} md={7}>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+            Recent Activities
+          </Typography>
+          <Paper elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
+            <List>
+              {recentActivities.map((activity, index) => (
+                <React.Fragment key={index}>
+                  <ListItem>
+                    <ListItemAvatar>
+                      <Avatar sx={{ bgcolor: "grey.100", color: "grey.600" }}>
+                        <HistoryIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText 
+                        primary={activity} 
+                        primaryTypographyProps={{ variant: 'body2', color: 'text.primary' }}
+                    />
+                  </ListItem>
+                  {index < recentActivities.length - 1 && <Divider variant="inset" component="li" />}
+                </React.Fragment>
+              ))}
+            </List>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
 
-/* ---------- Components ---------- */
+/* ---------- Sub-Components ---------- */
 
-function StatCard({ title, value, icon, color }) {
+function StatCard({ title, value, icon, color, small = false }) {
   return (
-    <div className={`rounded-lg p-5 ${color} border`}>
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-gray-500">{title}</p>
-          <p className="text-3xl font-bold text-gray-800 mt-1">{value}</p>
-        </div>
-        <div className="text-3xl">{icon}</div>
-      </div>
-    </div>
+    <Paper
+      elevation={0}
+      sx={{
+        p: small ? 2 : 3,
+        borderRadius: 3,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        background: `linear-gradient(135deg, ${color}05 0%, ${color}15 100%)`,
+        border: "1px solid",
+        borderColor: `${color}30`,
+      }}
+    >
+      <Box>
+        <Typography variant="body2" color="text.secondary" fontWeight="500">
+          {title}
+        </Typography>
+        <Typography variant={small ? "h5" : "h3"} fontWeight="800" sx={{ color: color }}>
+          {value}
+        </Typography>
+      </Box>
+      <Avatar
+        sx={{
+          bgcolor: color,
+          width: small ? 40 : 56,
+          height: small ? 40 : 56,
+          boxShadow: `0px 4px 10px ${color}40`,
+        }}
+      >
+        {icon}
+      </Avatar>
+    </Paper>
   );
 }
