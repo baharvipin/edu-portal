@@ -75,9 +75,9 @@ export default function TeacherDashboard() {
         <SchoolDetails school={teacher.school ?? {}} />
       </Box>
 
-      <Grid container spacing={4}>
+  <Grid container spacing={4}>
         {/* Quick Stats */}
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={12}>
           <StatCard
             title="Total Subjects"
             value={summary.subjectsCount}
@@ -85,13 +85,16 @@ export default function TeacherDashboard() {
             color="#1976d2"
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        </Grid>
+      <Grid container spacing={4}>
+         
+        {/* <Grid item xs={12} md={6}>
           <StatCard
             title="Total Students"
             value={summary.studentsCount}
             color="#2e7d32"
-          />
-        </Grid>
+          />  
+        </Grid> */}
 
         {/* My Subjects Grid */}
         <Grid item xs={12}>
