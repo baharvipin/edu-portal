@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import {
   Container,
   Grid,
@@ -24,23 +25,66 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 export default function StudentDashboard() {
-  const studentData = {};
-  const student = studentData?.student || {
-    fullName: "Vipin Kumar",
-    rollNo: "2024-08",
-    grade: "10th - Section A",
-  };
+  const [loading, setLoading] = useState(true);
+  const [studentData, setStudentData] = useState({});
+  const param = useParams();
+  console.log("hello", param);
 
-  const subjects = studentData?.subjects || [
-    {
-      name: "Mathematics",
-      teacher: "Mr. Raj Kumar",
-      progress: 75,
-      color: "#673ab7",
-    },
-    { name: "Physics", teacher: "Dr. Sharma", progress: 60, color: "#2196f3" },
-    { name: "English", teacher: "Ms. Anita", progress: 90, color: "#009688" },
-  ];
+  useEffect(() => {
+    const fetchStudentDashboard = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.REACT_APP_API_BASE_URL}/api/students/dashboard/${param?.studentId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          },
+        );
+
+        const result = await res.json();
+
+        if (result.success) {
+          setStudentData(result.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch student dashboard", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudentDashboard();
+  }, []);
+
+  if (loading) {
+    return <Typography sx={{ p: 4 }}>Loading dashboard...</Typography>;
+  }
+
+  const student = studentData
+    ? {
+        fullName: `${studentData.firstName} ${studentData.lastName}`,
+        rollNo: studentData.id.slice(0, 8).toUpperCase(), // temp roll no
+        grade: `${studentData.class.displayName} - Section ${studentData.section.name}`,
+      }
+    : {
+        fullName: "Loading...",
+        rollNo: "--",
+        grade: "--",
+      };
+
+  const subjects =
+    studentData?.studentSubjects?.length > 0
+      ? studentData.studentSubjects.map((item) => ({
+          name: item.subject.name,
+          teacher:
+            item.subject.teacherSubjects?.[0]?.teacher?.fullName ||
+            "Not Assigned",
+          progress: Math.floor(Math.random() * 40) + 60, // placeholder
+          color: "#673ab7",
+        }))
+      : [];
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -80,14 +124,12 @@ export default function StudentDashboard() {
             </Stack>
           </Grid>
           <Grid item>
-            <Chip 
-              label="Top 5% of Class"
-              sx={{
-                bgcolor: "rgba(255,255,255,0.1)",
-                color: "white",
-                fontWeight: "bold",
-              }}
-            />
+            <Typography variant="subtitle2" fontWeight="bold">
+              {studentData.school.name}
+            </Typography>
+            <Typography variant="caption">
+              {studentData.school.city}, {studentData.school.state}
+            </Typography>
           </Grid>
         </Grid>
       </Paper>
@@ -126,13 +168,19 @@ export default function StudentDashboard() {
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             My Courses & Progress
           </Typography>
-          <Grid container spacing={2}>
-            {subjects.map((sub, index) => (
-              <Grid item xs={12} sm={6} key={index}>
-                <SubjectProgressCard subject={sub} />
-              </Grid>
-            ))}
-          </Grid>
+          {subjects.length === 0 ? (
+            <Typography color="text.secondary" sx={{ mt: 2 }}>
+              No subjects assigned yet.
+            </Typography>
+          ) : (
+            <Grid container spacing={2}>
+              {subjects.map((sub, index) => (
+                <Grid item xs={12} sm={6} key={index}>
+                  <SubjectProgressCard subject={sub} />
+                </Grid>
+              ))}
+            </Grid>
+          )}
         </Grid>
 
         {/* 4. Sidebar: Upcoming Deadlines */}
@@ -175,28 +223,7 @@ export default function StudentDashboard() {
               </Typography>
             </Box>
           </Paper>
-
-          {/* School Badge (Integrated) */}
-          <Box
-            sx={{
-              mt: 4,
-              p: 2,
-              bgcolor: "#f0f4ff",
-              borderRadius: 4,
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-            }}
-          > 
-            <Box>
-              <Typography variant="subtitle2" fontWeight="bold">
-                JNV Ghazipur
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                CBSE Affiliated
-              </Typography>
-            </Box>
-          </Box>
+ 
         </Grid>
       </Grid>
     </Container>
