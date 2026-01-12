@@ -426,7 +426,7 @@ function RegistrationPage() {
                 textAlign="end"
               >
                 <Link component={RouterLink} to="/login" underline="hover">
-                  Already have an account? Login Here
+                  Already registered school? Login Here
                 </Link>
               </Typography>
             </Box>

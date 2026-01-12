@@ -365,7 +365,7 @@ function LoginPage() {
               >
                 Don&apos;t have an account?{" "}
                 <Link component={RouterLink} to="/register" underline="hover">
-                  Register Here
+                  Register Your School Here
                 </Link>
               </Typography>
             </Box>

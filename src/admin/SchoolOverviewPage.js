@@ -78,17 +78,35 @@ export default function SchoolOverviewPage() {
               <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
+
           <TableBody>
-            {teachers.map((t) => (
-              <TableRow key={t.id}>
-                <TableCell>{t.fullName}</TableCell>
-                <TableCell>{t.email}</TableCell>
-                <TableCell>{t.phone}</TableCell>
-                <TableCell>
-                  <StatusChip active={t.isActive} />
+            {teachers.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} align="center" sx={{ py: 6 }}>
+                  <Typography variant="h6" color="text.secondary">
+                    👨‍🏫 No teachers added yet
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 1 }}
+                  >
+                    Teachers will appear here once they are added to the school.
+                  </Typography>
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              teachers.map((t) => (
+                <TableRow key={t.id}>
+                  <TableCell>{t.fullName}</TableCell>
+                  <TableCell>{t.email}</TableCell>
+                  <TableCell>{t.phone}</TableCell>
+                  <TableCell>
+                    <StatusChip active={t.isActive} />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TabPanel>
@@ -105,20 +123,38 @@ export default function SchoolOverviewPage() {
               <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
+
           <TableBody>
-            {students.map((s) => (
-              <TableRow key={s.id}>
-                <TableCell>
-                  {s.firstName} {s.lastName}
-                </TableCell>
-                <TableCell>{s.email}</TableCell>
-                <TableCell>{s.phone}</TableCell>
-                <TableCell>{s.parentName}</TableCell>
-                <TableCell>
-                  <StatusChip active={s.isActive} />
+            {students.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                  <Typography variant="h6" color="text.secondary">
+                    🎓 No students enrolled yet
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 1 }}
+                  >
+                    Students will appear here once they are added to a class.
+                  </Typography>
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              students.map((s) => (
+                <TableRow key={s.id}>
+                  <TableCell>
+                    {s.firstName} {s.lastName}
+                  </TableCell>
+                  <TableCell>{s.email}</TableCell>
+                  <TableCell>{s.phone}</TableCell>
+                  <TableCell>{s.parentName}</TableCell>
+                  <TableCell>
+                    <StatusChip active={s.isActive} />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TabPanel>
@@ -132,52 +168,95 @@ export default function SchoolOverviewPage() {
               <TableCell>Name</TableCell>
             </TableRow>
           </TableHead>
+
           <TableBody>
-            {subjects.map((sub) => (
-              <TableRow key={sub.id}>
-                <TableCell>{sub.code}</TableCell>
-                <TableCell>{sub.name}</TableCell>
+            {subjects.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={2} align="center" sx={{ py: 6 }}>
+                  <Typography variant="h6" color="text.secondary">
+                    📘 No subjects added yet
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 1 }}
+                  >
+                    Subjects will appear here once they are created for this
+                    school.
+                  </Typography>
+                </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              subjects.map((sub) => (
+                <TableRow key={sub.id}>
+                  <TableCell>{sub.code || "-"}</TableCell>
+                  <TableCell>{sub.name}</TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TabPanel>
 
       {/* ---------------- CLASSES & SECTIONS ---------------- */}
       <TabPanel value={tab} index={3}>
-        {classes.map((cls) => (
-          <Accordion key={cls.id}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography fontWeight={600}>{cls.displayName}</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              {cls.sections.length ? (
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Section</TableCell>
-                      <TableCell>Status</TableCell>
+        {classes.length === 0 ? (
+          <Paper sx={{ p: 6, textAlign: "center" }}>
+            <Typography variant="h6" color="text.secondary">
+              🏫 No classes created yet
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              Classes and sections will appear here once they are added.
+            </Typography>
+          </Paper>
+        ) : (
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell width="40%">Class</TableCell>
+                <TableCell width="40%">Section</TableCell>
+                <TableCell width="20%">Status</TableCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {classes.map((cls) =>
+                cls.sections.length === 0 ? (
+                  <TableRow key={cls.id}>
+                    <TableCell>
+                      <Typography fontWeight={600}>
+                        {cls.displayName}
+                      </Typography>
+                    </TableCell>
+                    <TableCell colSpan={2}>
+                      <Typography color="text.secondary">
+                        📂 No sections available
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  cls.sections.map((sec, index) => (
+                    <TableRow key={sec.id}>
+                      <TableCell>
+                        {index === 0 && (
+                          <Typography fontWeight={600}>
+                            {cls.displayName}
+                          </Typography>
+                        )}
+                      </TableCell>
+
+                      <TableCell>{sec.name}</TableCell>
+
+                      <TableCell>
+                        <StatusChip active={sec.isActive} />
+                      </TableCell>
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {cls.sections.map((sec) => (
-                      <TableRow key={sec.id}>
-                        <TableCell>{sec.name}</TableCell>
-                        <TableCell>
-                          <StatusChip active={sec.isActive} />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <Typography color="text.secondary">
-                  No sections available
-                </Typography>
+                  ))
+                ),
               )}
-            </AccordionDetails>
-          </Accordion>
-        ))}
+            </TableBody>
+          </Table>
+        )}
       </TabPanel>
     </Paper>
   );
