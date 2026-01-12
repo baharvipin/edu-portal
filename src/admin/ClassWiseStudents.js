@@ -155,17 +155,17 @@ function ClassWiseStudents() {
               <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell>ID</TableCell>
                     <TableCell>Name</TableCell>
                     <TableCell>Email</TableCell>
+                    <TableCell>Phone</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {cls.students.map((s) => (
                     <TableRow key={s.id}>
-                      <TableCell>{s.id}</TableCell>
                       <TableCell>{s.firstName + s.lastName}</TableCell>
                       <TableCell>{s.email}</TableCell>
+                      <TableCell>{s.phone}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

@@ -56,6 +56,12 @@ function AddClassModal({ open, onClose, onSubmit, loading, editClass }) {
   const handleSubmit = () => {
     if (!validate()) return;
     onSubmit(form);
+
+    // Reset form only if adding a new class (not editing)
+    if (!editClass) {
+      setForm({ name: "", displayName: "", order: "" });
+      setErrors({});
+    }
   };
 
   return (

@@ -323,6 +323,10 @@ function SuperAdminDashboard() {
                     </TableCell>
                     <TableCell>
                       <Button
+                        disabled={
+                          school.status !== "ACTIVE" &&
+                          school.status !== "PROFILE_SUBMITTED"
+                        }
                         variant="outlined"
                         size="small"
                         sx={{ mr: 1 }}

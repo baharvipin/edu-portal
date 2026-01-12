@@ -49,25 +49,48 @@ function AddTeacherModal({
 
   useEffect(() => {
     if (editTeacher) {
-      console.log("check if", editTeacher);
-      const subjectNames = editTeacher?.subjects?.map((s) => s.subject.name);
+      // Map teacher's subjects to an array of subject names
+      const subjectNames =
+        editTeacher?.subjects?.map((s) => s.subject.name) || [];
 
       setForm({
-        name: editTeacher.fullName,
-        email: editTeacher.email,
-        phone: editTeacher.phone,
+        name: editTeacher.fullName || "",
+        email: editTeacher.email || "",
+        phone: editTeacher.phone || "",
         subjects: subjectNames,
       });
     } else {
-      console.log("check else", form);
+      // For Add mode, reset form
       setForm({
         name: "",
         email: "",
         phone: "",
-        subjects: subjects,
+        subjects: [],
       });
     }
-  }, [editTeacher]);
+  }, [editTeacher, open]); // ✅ depend on open to reset when modal is reopened
+
+  // useEffect(() => {
+  //   if (editTeacher) {
+  //     console.log("check if", editTeacher);
+  //     const subjectNames = editTeacher?.subjects?.map((s) => s.subject.name);
+
+  //     setForm({
+  //       name: editTeacher.fullName,
+  //       email: editTeacher.email,
+  //       phone: editTeacher.phone,
+  //       subjects: subjectNames,
+  //     });
+  //   } else {
+  //     console.log("check else", form);
+  //     setForm({
+  //       name: "",
+  //       email: "",
+  //       phone: "",
+  //       subjects: subjects,
+  //     });
+  //   }
+  // }, [editTeacher]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

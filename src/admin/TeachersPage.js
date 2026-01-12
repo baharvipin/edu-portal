@@ -218,15 +218,15 @@ function TeachersPage() {
 
           <TableBody>
             {teachers?.map((teacher) => (
-              <TableRow key={teacher.id}>
-                <TableCell>{teacher.fullName}</TableCell>
-                <TableCell>{teacher.email}</TableCell>
-                <TableCell>{teacher.phone}</TableCell>
+              <TableRow key={teacher?.id}>
+                <TableCell>{teacher?.fullName}</TableCell>
+                <TableCell>{teacher?.email}</TableCell>
+                <TableCell>{teacher?.phone}</TableCell>
                 <TableCell>
                   {teacher?.subjects?.map((s) => (
                     <Chip
-                      key={s.subject.id}
-                      label={s.subject.name}
+                      key={s?.subject?.id}
+                      label={s?.subject?.name}
                       size="small"
                       sx={{ mr: 0.5 }}
                     />
