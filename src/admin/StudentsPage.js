@@ -16,21 +16,67 @@ import AddStudentModal from "../components/AddStudentModal";
 import useFetch from "../hooks/useFetch";
 import { parseJwt } from "../utility/commonTask";
 import BulkStudentUpload from "../components/BulkStudentUpload";
+import AssignStudentSubjectsModal from "../components/AssignStudentSubjectsModal";
 
 function StudentsPage() {
+  const [openSubject, setOpenSubject] = useState(false);
   const [editStudent, setEditStudent] = useState(null);
   const [refreshStudents, setRefreshStudents] = useState(true);
   const [deleteStudentId, setDeleteStudentId] = useState(null);
   const [activateStudentId, setActivateStudentId] = useState(null);
-
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [open, setOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState("All");
   const [classes, setClasses] = useState([]);
 
-  const [students, setStudents] = React.useState([]);
+  const [subjectsLoading, setSubjectsLoading] = useState(false);
+  const [subjectsError, setSubjectsError] = useState(null);
+
+  const [subjects, setSubjects] = React.useState([]);
 
   const token = localStorage.getItem("authToken");
   const tokenDetails = parseJwt(token);
+
+  /* =======================
+       FETCH ALL SUBJECTS
+    ======================= */
+
+  const fetchAllSubjects = async () => {
+    try {
+      setSubjectsLoading(true);
+      setSubjectsError(null);
+
+      const token = localStorage.getItem("authToken");
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/subjects/${tokenDetails.schoolId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : undefined,
+          },
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to fetch subjects");
+      }
+
+      setSubjects(result?.subjects ?? []);
+    } catch (err) {
+      setSubjectsError(err.message);
+    } finally {
+      setSubjectsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllSubjects();
+  }, []);
 
   const { data: activateRes } = useFetch(
     activateStudentId ? `/api/students/${activateStudentId}/activate` : null,
@@ -97,6 +143,60 @@ function StudentsPage() {
     return section ? section.name : "";
   };
 
+  // 3️⃣ Open modal
+  const handleOpenAssign = (student) => {
+    console.log("hello opemning student", student);
+    setSelectedStudent(student);
+    setOpenSubject(true);
+  };
+
+  const handleAssignSubjects = async ({ studentId, subjectIds }) => {
+    try {
+      setSaving(true);
+
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/subjects/assign-subjects`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          schoolId: tokenDetails.schoolId,
+          studentId,
+          subjectIds,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result?.message || "Failed to assign subjects");
+      } 
+
+      setOpen(false);
+      setSelectedStudent(null);
+setRefreshStudents(true); //  refetch from API
+      // 🔁 Refresh students list
+      setRefreshKey((prev) => prev + 1);
+    } catch (error) {
+      console.error("Assign subjects error:", error);
+    } finally {
+      setSaving(false);
+      setOpenSubject(false)
+    }
+  };
+
+  function concatStudentSubjects(studentSubjects = []) {
+    console.log("helooo", studentSubjects)
+  if (!Array.isArray(studentSubjects) || studentSubjects.length === 0) {
+    return "";
+  }
+
+  return studentSubjects
+    .map(ss => ss.subject?.name)   // History, Mathematics, Physics
+    .join(", ");
+}
+
+
   return (
     <Box p={3}>
       <BulkStudentUpload
@@ -141,10 +241,7 @@ function StudentsPage() {
                   </Typography>
                   <Table>
                     <TableHead>
-                      <TableRow>
-                        <TableCell>
-                          <strong>Student ID</strong>
-                        </TableCell>
+                      <TableRow> 
                         <TableCell>
                           <strong>Name</strong>
                         </TableCell>
@@ -158,6 +255,9 @@ function StudentsPage() {
                           <strong>Email</strong>
                         </TableCell>
                         <TableCell>
+                          <strong>Subjects</strong>
+                        </TableCell>
+                        <TableCell>
                           <strong>Actions</strong>
                         </TableCell>
                       </TableRow>
@@ -166,7 +266,6 @@ function StudentsPage() {
                     <TableBody>
                       {c.students.map((student) => (
                         <TableRow key={student.id}>
-                          <TableCell>{student.id}</TableCell>
                           <TableCell>
                             {student.firstName + student.lastName}
                           </TableCell>
@@ -177,6 +276,7 @@ function StudentsPage() {
                             {getSectionName(c.sections, student.sectionId)}
                           </TableCell>
                           <TableCell>{student.email}</TableCell>
+                          <TableCell>{concatStudentSubjects(student.studentSubjects)}</TableCell>
                           <TableCell>
                             <Button
                               size="small"
@@ -202,6 +302,14 @@ function StudentsPage() {
                                 Activate
                               </Button>
                             )}
+
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              onClick={() => handleOpenAssign(student)}
+                            >
+                              Assign Subjects
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -229,6 +337,15 @@ function StudentsPage() {
         onSuccess={() => {
           setRefreshStudents(true); //  refetch from API
         }}
+      />
+
+      <AssignStudentSubjectsModal
+        open={openSubject}
+        onClose={() => setOpenSubject(false)}
+        onSubmit={handleAssignSubjects}
+        loading={saving}
+        student={selectedStudent}
+        subjects={subjects}
       />
     </Box>
   );

@@ -102,7 +102,6 @@ function SubjectsPage() {
       setSubjectsError(null);
 
       const token = localStorage.getItem("authToken");
-      // /api/classes/${tokenDetails.schoolId}
       const response = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/api/subjects/${tokenDetails.schoolId}`,
         {
