@@ -280,7 +280,10 @@ function SuperAdminDashboard() {
       </Typography>
 
       <Paper sx={{ p: 2, mb: 4 }}>
-        <Typography variant="h6">School Registrations List</Typography>
+        <Typography variant="h6" gutterBottom>
+          School Registrations List
+        </Typography>
+
         <TableContainer>
           <Table>
             <TableHead>
@@ -292,34 +295,53 @@ function SuperAdminDashboard() {
                 <TableCell>Action</TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
-              {schools.map((school) => (
-                <TableRow key={school.id}>
-                  <TableCell>{school.name}</TableCell>
-                  <TableCell>{school.city}</TableCell>
-                  <TableCell>{school.board}</TableCell>
-                  <TableCell>
-                    {new Date(school.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => handleAction(school)}
-                    >
-                      Action
-                    </Button>
 
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => handleView(school)}
+            <TableBody>
+              {schools.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                    <Typography variant="h6" color="text.secondary">
+                      🏫 No schools registered yet
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mt: 1 }}
                     >
-                      View Details
-                    </Button>
+                      Once schools submit registrations, they will appear here.
+                    </Typography>
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                schools.map((school) => (
+                  <TableRow key={school.id}>
+                    <TableCell>{school.name}</TableCell>
+                    <TableCell>{school.city}</TableCell>
+                    <TableCell>{school.board}</TableCell>
+                    <TableCell>
+                      {new Date(school.createdAt).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        sx={{ mr: 1 }}
+                        onClick={() => handleAction(school)}
+                      >
+                        Action
+                      </Button>
+
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => handleView(school)}
+                      >
+                        View Details
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </TableContainer>
