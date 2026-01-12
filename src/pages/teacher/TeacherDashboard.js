@@ -23,6 +23,11 @@ import {
 import BookIcon from "@mui/icons-material/MenuBook";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import HistoryIcon from "@mui/icons-material/History";
+// Icons
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import EmailIcon from "@mui/icons-material/Email";
+import VerifiedIcon from "@mui/icons-material/Verified";
+import BusinessIcon from "@mui/icons-material/Business";
 
 export default function TeacherDashboard() {
   const [dashboard, setDashboard] = useState(null);
@@ -35,7 +40,7 @@ export default function TeacherDashboard() {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
-      }
+      },
     )
       .then((res) => res.json())
       .then(setDashboard);
@@ -52,7 +57,8 @@ export default function TeacherDashboard() {
     );
   }
 
-  const { teacher, summary, myClasses, pendingActions, recentActivities } = dashboard;
+  const { teacher, summary, myClasses, pendingActions, recentActivities } =
+    dashboard;
 
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
@@ -62,8 +68,11 @@ export default function TeacherDashboard() {
           Welcome back, {teacher.fullName} 👋
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Here is a summary of your academic activities for today.
+          Here is a summary of your academic activities and school details.
         </Typography>
+      </Box>
+      <Box sx={{ mb: 5 }}>
+        <SchoolDetails school={teacher.school ?? {}} />
       </Box>
 
       <Grid container spacing={4}>
@@ -93,15 +102,31 @@ export default function TeacherDashboard() {
             {myClasses.length === 0 ? (
               <Grid item xs={12}>
                 <Paper variant="outlined" sx={{ p: 3, textAlign: "center" }}>
-                  <Typography color="text.secondary">No subjects assigned yet.</Typography>
+                  <Typography color="text.secondary">
+                    No subjects assigned yet.
+                  </Typography>
                 </Paper>
               </Grid>
             ) : (
               myClasses.map(({ subject }) => (
                 <Grid item xs={12} sm={6} md={4} key={subject.id}>
-                  <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3, transition: '0.3s', '&:hover': { boxShadow: 3 } }}>
+                  <Card
+                    elevation={0}
+                    sx={{
+                      border: "1px solid",
+                      borderColor: "divider",
+                      borderRadius: 3,
+                      transition: "0.3s",
+                      "&:hover": { boxShadow: 3 },
+                    }}
+                  >
                     <CardContent>
-                      <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        alignItems="center"
+                        sx={{ mb: 2 }}
+                      >
                         <Avatar sx={{ bgcolor: "primary.light" }}>
                           <BookIcon />
                         </Avatar>
@@ -129,7 +154,7 @@ export default function TeacherDashboard() {
         </Grid>
 
         {/* Action Items & Recent Activity */}
-        <Grid item xs={12} md={5}>
+        {/* <Grid item xs={12} md={5}>
           <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
             Action Required
           </Typography>
@@ -148,9 +173,9 @@ export default function TeacherDashboard() {
               small
             />
           </Stack>
-        </Grid>
+        </Grid> */}
 
-        <Grid item xs={12} md={7}>
+        {/* <Grid item xs={12} md={7}>
           <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
             Recent Activities
           </Typography>
@@ -174,7 +199,7 @@ export default function TeacherDashboard() {
               ))}
             </List>
           </Paper>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Container>
   );
@@ -201,7 +226,11 @@ function StatCard({ title, value, icon, color, small = false }) {
         <Typography variant="body2" color="text.secondary" fontWeight="500">
           {title}
         </Typography>
-        <Typography variant={small ? "h5" : "h3"} fontWeight="800" sx={{ color: color }}>
+        <Typography
+          variant={small ? "h5" : "h3"}
+          fontWeight="800"
+          sx={{ color: color }}
+        >
           {value}
         </Typography>
       </Box>
@@ -215,6 +244,122 @@ function StatCard({ title, value, icon, color, small = false }) {
       >
         {icon}
       </Avatar>
+    </Paper>
+  );
+}
+
+function SchoolDetails({ school }) {
+  if (!school) return null;
+
+  return (
+    <Paper
+      elevation={0}
+      sx={{
+        p: 4,
+        borderRadius: 4,
+        border: "1px solid",
+        borderColor: "divider",
+        background: "linear-gradient(135deg, #ffffff 0%, #f8faff 100%)",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      <Grid container spacing={4} alignItems="center">
+        {/* Left Side: Avatar/Logo */}
+        <Grid item>
+          <Avatar
+            sx={{
+              width: 100,
+              height: 100,
+              bgcolor: "primary.main",
+              boxShadow: "0 8px 16px rgba(25, 118, 210, 0.2)",
+              fontSize: 40,
+            }}
+          >
+            {school.name.charAt(0)}
+          </Avatar>
+        </Grid>
+
+        {/* Middle: Primary Info */}
+        <Grid item xs={12} sm>
+          <Box sx={{ mb: 1, display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography variant="h4" fontWeight="800" color="text.primary">
+              {school.name}
+            </Typography>
+            {school.isActive && (
+              <VerifiedIcon color="primary" sx={{ fontSize: 28 }} />
+            )}
+          </Box>
+
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
+            <Chip
+              label={school.board}
+              color="secondary"
+              size="small"
+              variant="outlined"
+              sx={{ fontWeight: "bold" }}
+            />
+            <Typography variant="body2" color="text.secondary">
+              • School ID: {school.id.split("-")[0].toUpperCase()}
+            </Typography>
+          </Stack>
+
+          <Grid container spacing={2}>
+            {/* Location */}
+            <Grid item sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <LocationOnIcon fontSize="small" color="action" />
+              <Typography variant="body2" color="text.secondary">
+                {school.city}, {school.state}
+              </Typography>
+            </Grid>
+
+            {/* Email */}
+            <Grid item sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <EmailIcon fontSize="small" color="action" />
+              <Typography variant="body2" color="text.secondary">
+                {school.email}
+              </Typography>
+            </Grid>
+
+            {/* System Type */}
+            <Grid item sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <BusinessIcon fontSize="small" color="action" />
+              <Typography variant="body2" color="text.secondary">
+                {school.system || "Standard Education System"}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+
+        {/* Right Side: Status Badge */}
+        <Grid item sx={{ textAlign: "right" }}>
+          <Box>
+            <Typography
+              variant="caption"
+              display="block"
+              color="text.secondary"
+              gutterBottom
+            >
+              INSTITUTION STATUS
+            </Typography>
+            <Chip
+              label={school.isActive ? "ACTIVE" : "INACTIVE"}
+              color={school.isActive ? "success" : "error"}
+              sx={{
+                fontWeight: "bold",
+                px: 2,
+                borderRadius: "8px",
+              }}
+            />
+          </Box>
+        </Grid>
+      </Grid>
+
+      <Divider sx={{ my: 3, opacity: 0.6 }} />
+
+      <Typography variant="caption" color="text.secondary" fontStyle="italic">
+        Registered School under the {school.board} Board Authority.
+      </Typography>
     </Paper>
   );
 }
