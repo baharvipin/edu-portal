@@ -154,48 +154,50 @@ function StudentsPage() {
     try {
       setSaving(true);
 
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/subjects/assign-subjects`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/subjects/assign-subjects`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            schoolId: tokenDetails.schoolId,
+            studentId,
+            subjectIds,
+          }),
         },
-        body: JSON.stringify({
-          schoolId: tokenDetails.schoolId,
-          studentId,
-          subjectIds,
-        }),
-      });
+      );
 
       const result = await response.json();
 
       if (!response.ok) {
         throw new Error(result?.message || "Failed to assign subjects");
-      } 
+      }
 
       setOpen(false);
       setSelectedStudent(null);
-setRefreshStudents(true); //  refetch from API
+      setRefreshStudents(true); //  refetch from API
       // 🔁 Refresh students list
       setRefreshKey((prev) => prev + 1);
     } catch (error) {
       console.error("Assign subjects error:", error);
     } finally {
       setSaving(false);
-      setOpenSubject(false)
+      setOpenSubject(false);
     }
   };
 
   function concatStudentSubjects(studentSubjects = []) {
-    console.log("helooo", studentSubjects)
-  if (!Array.isArray(studentSubjects) || studentSubjects.length === 0) {
-    return "";
+    console.log("helooo", studentSubjects);
+    if (!Array.isArray(studentSubjects) || studentSubjects.length === 0) {
+      return "";
+    }
+
+    return studentSubjects
+      .map((ss) => ss.subject?.name) // History, Mathematics, Physics
+      .join(", ");
   }
-
-  return studentSubjects
-    .map(ss => ss.subject?.name)   // History, Mathematics, Physics
-    .join(", ");
-}
-
 
   return (
     <Box p={3}>
@@ -241,7 +243,7 @@ setRefreshStudents(true); //  refetch from API
                   </Typography>
                   <Table>
                     <TableHead>
-                      <TableRow> 
+                      <TableRow>
                         <TableCell>
                           <strong>Name</strong>
                         </TableCell>
@@ -276,7 +278,9 @@ setRefreshStudents(true); //  refetch from API
                             {getSectionName(c.sections, student.sectionId)}
                           </TableCell>
                           <TableCell>{student.email}</TableCell>
-                          <TableCell>{concatStudentSubjects(student.studentSubjects)}</TableCell>
+                          <TableCell>
+                            {concatStudentSubjects(student.studentSubjects)}
+                          </TableCell>
                           <TableCell>
                             <Button
                               size="small"

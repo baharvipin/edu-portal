@@ -38,9 +38,11 @@ function AssignStudentSubjectsModal({
 
   // Prefill when editing
   useEffect(() => {
-    if (student?.subjects?.length) {
+    if (student?.studentSubjects?.length) {
       setSelectedSubjects(
-        student.subjects.map((s) => s.subjectId || s.subject?.id),
+        student.studentSubjects.map(
+          (s) => s.subject.subjectId || s.subject?.id,
+        ),
       );
     } else {
       setSelectedSubjects([]);
