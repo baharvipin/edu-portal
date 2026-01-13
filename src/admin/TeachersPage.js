@@ -17,6 +17,7 @@ import AddIcon from "@mui/icons-material/Add";
 import AddTeacherModal from "../components/AddTeacherModal";
 import useFetch from "../hooks/useFetch";
 import { parseJwt } from "../utility/commonTask";
+import { showToast } from "../utility/toastService";
 
 function TeachersPage() {
   const [teachers, setTeachers] = useState([]);
@@ -82,6 +83,7 @@ function TeachersPage() {
 
   useEffect(() => {
     if (addTeacherResponse) {
+      showToast(addTeacherResponse?.message || "Teacher saved", "success");
       if (submitPayload?.mode === "edit") {
         setTeachers((prev) =>
           prev.map((t) =>
@@ -139,7 +141,7 @@ function TeachersPage() {
 
   const handleActivateTeacher = async (teacher) => {
     try {
-      await fetch(
+      const res = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/api/teachers/activate/${teacher.id}`,
         {
           method: "PUT",
@@ -150,16 +152,26 @@ function TeachersPage() {
         },
       );
 
+      const data = await res.json();
+
+      if (!data.status) {
+        showToast(data?.message || "Activation failed", "error");
+        throw new Error(data?.message || "Activation failed");
+      }
+
+      showToast(data?.message || "Teacher activated", "success");
+
       // 🔁 re-fetch teachers
       updateTeacherStatus(teacher.id, true);
     } catch (error) {
       console.error("Activate failed", error);
+      showToast(error.message || "Activate failed", "error");
     }
   };
 
   const handleDeActivateTeacher = async (teacher) => {
     try {
-      await fetch(
+      const res = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/api/teachers/deactivate/${teacher.id}`,
         {
           method: "PUT",
@@ -170,10 +182,20 @@ function TeachersPage() {
         },
       );
 
+      const data = await res.json();
+
+      if (!data.status) {
+        showToast(data?.message || "Deactivate failed", "error");
+        throw new Error(data?.message || "Deactivate failed");
+      }
+
+      showToast(data?.message || "Teacher deactivated", "success");
+
       // 🔁 re-fetch teachers
       updateTeacherStatus(teacher.id, false);
     } catch (error) {
       console.error("Deactivate failed", error);
+      showToast(error.message || "Deactivate failed", "error");
     }
   };
 

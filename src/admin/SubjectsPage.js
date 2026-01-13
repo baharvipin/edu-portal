@@ -13,6 +13,7 @@ import {
 import AddSubjectModal from "../components/AddSubjectModal";
 import useFetch from "../hooks/useFetch";
 import { parseJwt } from "../utility/commonTask";
+import { showToast } from "../utility/toastService";
 
 function SubjectsPage() {
   const [open, setOpen] = useState(false);
@@ -62,6 +63,7 @@ function SubjectsPage() {
     const handleAdd = async () => {
       await fetchAllSubjects();
       setSubmitPayload(null);
+      showToast(subjectAddResponse?.message || "Subject added", "success");
     };
 
     handleAdd();
@@ -87,6 +89,7 @@ function SubjectsPage() {
       await fetchAllSubjects();
       setSubmitPayloadEdit(null);
       setSelectedSubject({});
+      showToast(subjectEditResponse?.message || "Subject updated", "success");
     };
 
     handleEdit();
@@ -122,6 +125,7 @@ function SubjectsPage() {
       setSubjects(result?.subjects ?? []);
     } catch (err) {
       setSubjectsError(err.message);
+      showToast(err.message || "Failed to fetch subjects", "error");
     } finally {
       setSubjectsLoading(false);
     }
@@ -169,7 +173,7 @@ function SubjectsPage() {
       return;
 
     try {
-      await fetch(
+      const res = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/api/subjects/${subject.id}`,
         {
           method: "PATCH",
@@ -183,9 +187,19 @@ function SubjectsPage() {
         },
       );
 
+      const data = await res.json();
+
+      if (!res.ok) {
+        showToast(data?.message || "Delete failed", "error");
+        throw new Error(data?.message || "Delete failed");
+      }
+
+      showToast(data?.message || "Subject deleted", "success");
+
       fetchAllSubjects();
     } catch (err) {
       console.error("Delete failed", err);
+      showToast(err.message || "Delete failed", "error");
     }
   };
 

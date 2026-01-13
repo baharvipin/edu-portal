@@ -7,6 +7,7 @@ import {
   Alert,
   CircularProgress,
 } from "@mui/material";
+import { showToast } from "../utility/toastService";
 
 export default function BulkStudentUpload({ schoolId, onSuccess }) {
   const [students, setStudents] = useState([]);
@@ -82,6 +83,7 @@ export default function BulkStudentUpload({ schoolId, onSuccess }) {
       const data = await res.json();
 
       if (!res.ok) {
+        showToast(data.message || "Upload failed", "error");
         throw new Error(data.message || "Upload failed");
       }
 
@@ -90,8 +92,10 @@ export default function BulkStudentUpload({ schoolId, onSuccess }) {
       setFileName("");
 
       onSuccess?.();
+      showToast(data.message || "Students uploaded successfully", "success");
     } catch (err) {
       setError(err.message);
+      showToast(err.message || "Upload failed", "error");
     } finally {
       setLoading(false);
     }

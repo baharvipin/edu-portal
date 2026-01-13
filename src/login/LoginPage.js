@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { showToast } from "../utility/toastService";
 import "../App.css";
 
 const theme = createTheme({
@@ -118,7 +119,8 @@ function LoginPage() {
       // Temporary log for debugging; remove in production
       // eslint-disable-next-line no-console
       console.log("Login response data:", data);
-      if (!response.ok) {
+
+      if (!data.status) {
         if (data.errors && typeof data.errors === "object") {
           const apiErrors = {};
           Object.keys(data.errors).forEach((key) => {
@@ -126,12 +128,13 @@ function LoginPage() {
               ? data.errors[key][0]
               : data.errors[key];
           });
+
           setErrors((prev) => ({ ...prev, ...apiErrors }));
         }
-
+        showToast(data.message, "error");
         throw new Error(data.message || "Login failed. Please try again.");
       }
-
+      showToast(data.message, "success");
       localStorage.setItem("isLoggedIn", "true");
 
       if (data.token) {
@@ -376,6 +379,7 @@ function LoginPage() {
           </Paper>
         </Container>
       </Box>
+      {/* 3. drop the component here once */}
     </ThemeProvider>
   );
 }

@@ -28,6 +28,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmailIcon from "@mui/icons-material/Email";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import BusinessIcon from "@mui/icons-material/Business";
+import { showToast } from "../../utility/toastService";
 
 export default function TeacherDashboard() {
   const [dashboard, setDashboard] = useState(null);
@@ -42,8 +43,14 @@ export default function TeacherDashboard() {
         },
       },
     )
-      .then((res) => res.json())
-      .then(setDashboard);
+      .then((res) => {
+        return res.json();
+      })
+      .then((data)=>setDashboard(data))
+      .catch((err) => {
+        console.error("Dashboard fetch error:", err);
+        showToast(err.message || "Failed to load dashboard", "error");
+      });
   }, [teacherId]);
 
   if (!dashboard) {

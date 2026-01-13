@@ -134,7 +134,7 @@ function AddTeacherModal({
   const handleSubmit = () => {
     if (!validate()) return;
 
-    onSubmit(form); // ✅ API call only if valid
+    onSubmit(form);
   };
 
   const handleClose = () => {

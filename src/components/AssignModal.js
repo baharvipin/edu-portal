@@ -13,6 +13,7 @@ import {
   Stack,
 } from "@mui/material";
 import useFetch from "../hooks/useFetch";
+import { showToast } from "../utility/toastService";
 
 export default function AssignModal({
   open,
@@ -29,19 +30,17 @@ export default function AssignModal({
 
   /* ---------------- FETCH DATA ---------------- */
 
-  const { data: teachersRes } = useFetch(
+  const { data: teachersRes, error: teachersError } = useFetch(
     `/api/teachers/${schoolId}`,
     undefined,
     !!schoolId,
   );
-
-  const { data: classesRes } = useFetch(
+  const { data: classesRes, error: classesError } = useFetch(
     `/api/classes/${schoolId}`,
     undefined,
     !!schoolId,
   );
-
-  const { data: subjectsRes } = useFetch(
+  const { data: subjectsRes, error: subjectsError } = useFetch(
     `/api/subjects/${schoolId}`,
     undefined,
     !!schoolId,
@@ -50,6 +49,18 @@ export default function AssignModal({
   const teachers = teachersRes?.teachers ?? [];
   const classes = classesRes?.classes ?? [];
   const subjects = subjectsRes?.subjects ?? [];
+
+  useEffect(() => {
+    if (teachersError) {
+      showToast(teachersError, "error");
+    }
+    if (classesError) {
+      showToast(classesError, "error");
+    }
+    if (subjectsError) {
+      showToast(subjectsError, "error");
+    }
+  }, [teachersError, classesError, subjectsError]);
 
   //   console.log("classes in assign modal", classes);
   //   console.log("teachers in assign modal", teachers);

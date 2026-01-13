@@ -17,6 +17,7 @@ import useFetch from "../hooks/useFetch";
 import { parseJwt } from "../utility/commonTask";
 import BulkStudentUpload from "../components/BulkStudentUpload";
 import AssignStudentSubjectsModal from "../components/AssignStudentSubjectsModal";
+import { showToast } from "../utility/toastService";
 
 function StudentsPage() {
   const [openSubject, setOpenSubject] = useState(false);
@@ -69,6 +70,7 @@ function StudentsPage() {
       setSubjects(result?.subjects ?? []);
     } catch (err) {
       setSubjectsError(err.message);
+      showToast(err.message || "Failed to fetch subjects", "error");
     } finally {
       setSubjectsLoading(false);
     }
@@ -78,7 +80,7 @@ function StudentsPage() {
     fetchAllSubjects();
   }, []);
 
-  const { data: activateRes } = useFetch(
+  const { data: activateRes, error: activateError } = useFetch(
     activateStudentId ? `/api/students/${activateStudentId}/activate` : null,
     { method: "PUT" },
     !!activateStudentId,
@@ -91,7 +93,16 @@ function StudentsPage() {
     }
   }, [activateRes]);
 
-  const { data: deleteRes } = useFetch(
+  useEffect(() => {
+    if (activateRes) {
+      showToast(activateRes?.message || "Student activated", "success");
+    }
+    if (activateError) {
+      showToast(activateError || "Activation failed", "error");
+    }
+  }, [activateRes, activateError]);
+
+  const { data: deleteRes, error: deleteError } = useFetch(
     deleteStudentId ? `/api/students/${deleteStudentId}/delete` : null,
     { method: "PUT" },
     !!deleteStudentId,
@@ -104,8 +115,17 @@ function StudentsPage() {
     }
   }, [deleteRes]);
 
+  useEffect(() => {
+    if (deleteRes) {
+      showToast(deleteRes?.message || "Student removed", "success");
+    }
+    if (deleteError) {
+      showToast(deleteError || "Remove failed", "error");
+    }
+  }, [deleteRes, deleteError]);
+
   /** Fetch classes */
-  const { data: classRes } = useFetch(
+  const { data: classRes, error: classError } = useFetch(
     `/api/classes/${tokenDetails.schoolId}`,
     {},
     !!tokenDetails?.schoolId && refreshStudents,
@@ -117,6 +137,12 @@ function StudentsPage() {
       setRefreshStudents(false); // stop refetch
     }
   }, [classRes]);
+
+  useEffect(() => {
+    if (classError) {
+      showToast(classError || "Failed to fetch classes", "error");
+    }
+  }, [classError]);
 
   // const filteredStudents =
   //   selectedClass === "All"
@@ -172,9 +198,11 @@ function StudentsPage() {
       const result = await response.json();
 
       if (!response.ok) {
+        showToast(result?.message || "Failed to assign subjects", "error");
         throw new Error(result?.message || "Failed to assign subjects");
       }
 
+      showToast(result?.message || "Subjects assigned", "success");
       setOpen(false);
       setSelectedStudent(null);
       setRefreshStudents(true); //  refetch from API
@@ -182,6 +210,7 @@ function StudentsPage() {
       setRefreshKey((prev) => prev + 1);
     } catch (error) {
       console.error("Assign subjects error:", error);
+      showToast(error.message || "Assign subjects failed", "error");
     } finally {
       setSaving(false);
       setOpenSubject(false);

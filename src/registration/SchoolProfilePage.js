@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Alert,
   Box,
@@ -20,6 +20,7 @@ import {
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
+import { showToast } from "../utility/toastService";
 
 const theme = createTheme({
   palette: {
@@ -46,6 +47,7 @@ function Section({ title, children }) {
 
 function SchoolProfilePage({ registrationData }) {
   const navigate = useNavigate();
+
   const [medium, setMedium] = useState("English");
   const [gradingSystem, setGradingSystem] = useState("Grades");
   const [attendanceMode, setAttendanceMode] = useState("Manual");
@@ -224,6 +226,11 @@ function SchoolProfilePage({ registrationData }) {
 
       setApiSuccess(result.message || "School profile saved successfully!");
 
+      showToast(
+        result.message || "School profile saved successfully!",
+        "success",
+      );
+
       localStorage.setItem("profileCompleted", "true");
       localStorage.setItem("status", "PROFILE_SUBMITTED");
       navigate("/dashboard", { replace: true });
@@ -234,6 +241,7 @@ function SchoolProfilePage({ registrationData }) {
         error.message ||
           "An unexpected error occurred. Please check the console for details.",
       );
+      showToast(error.message || "Failed to save profile", "error");
     } finally {
       setLoading(false);
     }

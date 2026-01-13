@@ -16,6 +16,7 @@ import {
   Modal,
   Stack,
 } from "@mui/material";
+import { showToast } from "../utility/toastService";
 
 const modalStyle = {
   position: "absolute",
@@ -55,7 +56,8 @@ function SuperAdminDashboard() {
         );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch schools");
+          const errText = await response.text();
+          throw new Error(errText || "Failed to fetch schools");
         }
 
         const result = await response.json();
@@ -63,6 +65,7 @@ function SuperAdminDashboard() {
       } catch (err) {
         console.error(err);
         setError("Unable to load schools");
+        showToast(err.message || "Unable to load schools", "error");
       } finally {
         setLoading(false);
       }
@@ -73,6 +76,14 @@ function SuperAdminDashboard() {
 
   const handleAction = (school) => {
     console.log("Viewing school:", school);
+    if (school.status !== "ACTIVE" && school.status !== "PROFILE_SUBMITTED") {
+      showToast(
+        "School admin has not completed school profile, once they will complete the profile, you will be able to perform action.",
+        "error",
+      );
+      return;
+    }
+
     setSelectedSchool(school);
     setModalOpen(true);
   };
@@ -103,6 +114,10 @@ function SuperAdminDashboard() {
       const data = await response.json();
 
       if (!response.ok) {
+        showToast(
+          data.message || "Approval failed. Please try again.",
+          "error",
+        );
         throw new Error(data.message || "Approval failed. Please try again.");
       }
 
@@ -111,8 +126,10 @@ function SuperAdminDashboard() {
       );
       setSchools(updatedSchools);
       handleClose();
+      showToast(data.message || "School approved", "success");
     } catch (err) {
       console.error(err);
+      showToast(err.message || "Approve failed", "error");
     } finally {
       setLoading(false);
     }
@@ -141,6 +158,7 @@ function SuperAdminDashboard() {
       const data = await response.json();
 
       if (!response.ok) {
+        showToast(data.message || "Reject failed", "error");
         throw new Error(data.message || "Reject failed");
       }
 
@@ -150,8 +168,10 @@ function SuperAdminDashboard() {
       );
 
       handleClose();
+      showToast(data.message || "School rejected", "success");
     } catch (err) {
       console.error("Reject error:", err.message);
+      showToast(err.message || "Reject failed", "error");
     } finally {
       setLoading(false);
     }
@@ -180,6 +200,7 @@ function SuperAdminDashboard() {
       const data = await response.json();
 
       if (!response.ok) {
+        showToast(data.message || "Suspend failed", "error");
         throw new Error(data.message || "Suspend failed");
       }
 
@@ -190,8 +211,10 @@ function SuperAdminDashboard() {
       );
 
       handleClose();
+      showToast(data.message || "School suspended", "success");
     } catch (err) {
       console.error("Suspend error:", err.message);
+      showToast(err.message || "Suspend failed", "error");
     } finally {
       setLoading(false);
     }
@@ -217,6 +240,10 @@ function SuperAdminDashboard() {
       const data = await response.json();
 
       if (!response.ok) {
+        showToast(
+          data.message || "Deactivation failed. Please try again.",
+          "error",
+        );
         throw new Error(
           data.message || "Deactivation failed. Please try again.",
         );
@@ -229,11 +256,13 @@ function SuperAdminDashboard() {
       setSchools(updatedSchools);
 
       handleClose(); // close modal
+      showToast(data.message || "School deactivated", "success");
     } catch (err) {
       console.error(err);
       alert(
         err.message || "Something went wrong while deactivating the school.",
       );
+      showToast(err.message || "Deactivation failed", "error");
     } finally {
       setLoading(false);
     }
@@ -323,10 +352,6 @@ function SuperAdminDashboard() {
                     </TableCell>
                     <TableCell>
                       <Button
-                        disabled={
-                          school.status !== "ACTIVE" &&
-                          school.status !== "PROFILE_SUBMITTED"
-                        }
                         variant="outlined"
                         size="small"
                         sx={{ mr: 1 }}

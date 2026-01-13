@@ -18,6 +18,7 @@ import {
   ListItemText,
   ListItemIcon,
 } from "@mui/material";
+import { showToast } from "../../utility/toastService";
 
 // Icons
 import TimerIcon from "@mui/icons-material/Timer";
@@ -45,11 +46,15 @@ export default function StudentDashboard() {
 
         const result = await res.json();
 
-        if (result.success) {
+        if (result.status) {
           setStudentData(result.data);
         }
       } catch (error) {
         console.error("Failed to fetch student dashboard", error);
+        showToast(
+          error.message || "Failed to fetch student dashboard",
+          "error",
+        );
       } finally {
         setLoading(false);
       }
@@ -65,8 +70,8 @@ export default function StudentDashboard() {
   const student = studentData
     ? {
         fullName: `${studentData.firstName} ${studentData.lastName}`,
-        rollNo: studentData.id.slice(0, 8).toUpperCase(), // temp roll no
-        grade: `${studentData.class.displayName} - Section ${studentData.section.name}`,
+        rollNo: studentData?.id?.slice(0, 8).toUpperCase(), // temp roll no
+        grade: `${studentData?.class?.displayName} - Section ${studentData?.section?.name}`,
       }
     : {
         fullName: "Loading...",
@@ -76,10 +81,10 @@ export default function StudentDashboard() {
 
   const subjects =
     studentData?.studentSubjects?.length > 0
-      ? studentData.studentSubjects.map((item) => ({
-          name: item.subject.name,
+      ? studentData?.studentSubjects.map((item) => ({
+          name: item?.subject?.name,
           teacher:
-            item.subject.teacherSubjects?.[0]?.teacher?.fullName ||
+            item?.subject?.teacherSubjects?.[0]?.teacher?.fullName ||
             "Not Assigned",
           progress: Math.floor(Math.random() * 40) + 60, // placeholder
           color: "#673ab7",
@@ -125,10 +130,10 @@ export default function StudentDashboard() {
           </Grid>
           <Grid item>
             <Typography variant="subtitle2" fontWeight="bold">
-              {studentData.school.name}
+              {studentData?.school?.name}
             </Typography>
             <Typography variant="caption">
-              {studentData.school.city}, {studentData.school.state}
+              {studentData?.school?.city}, {studentData?.school?.state}
             </Typography>
           </Grid>
         </Grid>
@@ -223,7 +228,6 @@ export default function StudentDashboard() {
               </Typography>
             </Box>
           </Paper>
- 
         </Grid>
       </Grid>
     </Container>

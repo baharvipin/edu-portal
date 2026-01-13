@@ -15,6 +15,7 @@ import DashboardCard from "./DashboardCard";
 import ActionCard from "./ActionCard";
 import { parseJwt } from "../utility/commonTask";
 import useFetch from "../hooks/useFetch";
+import { showToast } from "../utility/toastService";
 
 function DashboardPage() {
   const [teacherCount, setTeacherCount] = useState(0);
@@ -25,9 +26,12 @@ function DashboardPage() {
   const token = localStorage.getItem("authToken");
   const tokenDetails = parseJwt(token);
   const navigate = useNavigate();
-  const { data: dashboardRes, loading } = useFetch(
-    `/api/school/${tokenDetails?.schoolId}/overview`,
-  );
+
+  const {
+    data: dashboardRes,
+    loading,
+    error,
+  } = useFetch(`/api/school/${tokenDetails?.schoolId}/overview`);
 
   useEffect(() => {
     if (dashboardRes) {
@@ -38,6 +42,12 @@ function DashboardPage() {
       setClassesCount(dashboardRes?.classes?.length);
     }
   }, [dashboardRes]);
+
+  useEffect(() => {
+    if (error) {
+      showToast(error || "Failed to load dashboard", "error");
+    }
+  }, [error]);
 
   return (
     <>

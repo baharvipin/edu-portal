@@ -22,6 +22,7 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import "../App.css";
+import { showToast } from "../utility/toastService";
 
 const theme = createTheme({
   palette: {
@@ -201,6 +202,7 @@ function RegistrationPage() {
       }
 
       setApiSuccess(data.message || "School registered successfully!");
+      showToast(data.message || "School registered successfully!", "success");
       // Reset form on success
       setFormData({
         schoolName: "",
@@ -216,6 +218,7 @@ function RegistrationPage() {
       });
     } catch (error) {
       setApiError(error.message || "An error occurred. Please try again.");
+      showToast(error.message || "Registration failed", "error");
     } finally {
       setLoading(false);
     }

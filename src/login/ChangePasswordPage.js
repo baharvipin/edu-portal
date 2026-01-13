@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { showToast } from "../utility/toastService";
 
 export default function ChangePasswordPage() {
   const [newPassword, setNewPassword] = useState("");
@@ -53,6 +54,8 @@ export default function ChangePasswordPage() {
 
       setSuccess(data.message || "Password updated successfully");
 
+      showToast(data.message || "Password updated successfully", "success");
+
       // If forceLogout is true, clear login and redirect
       if (data.forceLogout) {
         alert("Password changed successfully. Please login again.");
@@ -61,6 +64,7 @@ export default function ChangePasswordPage() {
       }
     } catch (err) {
       setError(err.message);
+      showToast(err.message || "Failed to change password", "error");
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { showToast } from "../utility/toastService";
 
 export default function useFetch(url, options = {}, enabled = true) {
   const [data, setData] = useState(null);
@@ -27,19 +28,34 @@ export default function useFetch(url, options = {}, enabled = true) {
         );
 
         const result = await response.json();
+        console.log("result", result);
 
         if (!response.ok) {
-          throw new Error(result.message || "Something went wrong");
+          const msg = result?.message || "Something went wrong";
+          try {
+            showToast(msg, "error");
+          } catch (e) {}
+          throw new Error(msg);
         }
 
         if (isMounted) {
           setData(result);
           setError(null);
         }
+
+        // Show success toast for non-GET operations when API returns a message
+        const method = (options.method || "GET").toUpperCase();
+        if (method == "GET" && result && result.message) {
+          console.log("gett");
+          showToast(result.message, "success");
+        }
       } catch (err) {
         if (isMounted) {
           setError(err.message);
         }
+        try {
+          showToast(err.message || "Request failed", "error");
+        } catch (e) {}
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -52,7 +68,7 @@ export default function useFetch(url, options = {}, enabled = true) {
     return () => {
       isMounted = false;
     };
-  }, [url, enabled, options?.refreshKey]); // Added options.refreshKey as dependency
+  }, [url, enabled, options.method, JSON.stringify(options.body)]); // Added options.refreshKey as dependency
 
   return { data, loading, error };
 }

@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import useFetch from "../hooks/useFetch";
 import { parseJwt } from "../utility/commonTask";
+import { showToast } from "../utility/toastService";
 
 const modalStyle = {
   position: "absolute",
@@ -91,6 +92,11 @@ function AddStudentModal({ open, onClose, onSuccess, student = null }) {
 
   useEffect(() => {
     if (addStudentRes) {
+      showToast(
+        addStudentRes?.message ||
+          (isEditMode ? "Student updated" : "Student added"),
+        "success",
+      );
       onSuccess?.(addStudentRes.student);
       handleClose();
     }
@@ -144,10 +150,11 @@ function AddStudentModal({ open, onClose, onSuccess, student = null }) {
 
   const handleSubmit = () => {
     if (!validate()) return;
-
+    console.log("hello add student");
     setPayload({
       ...form,
       schoolId,
+      _trigger: Date.now(), // 👈 FORCE change
     });
   };
 
