@@ -12,11 +12,7 @@ import {
   TableBody,
   Paper,
   Chip,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import useFetch from "../hooks/useFetch";
 import { showToast } from "../utility/toastService";
 
@@ -44,7 +40,7 @@ export default function SchoolOverviewPage() {
 
   const {
     data: dashboardRes,
-    loading,
+    _loading,
     error,
   } = useFetch(`/api/school/${id}/overview`);
 

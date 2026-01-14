@@ -73,14 +73,36 @@ function SuperAdminDashboard() {
     fetchSchools();
   }, []);
 
+  const statusMessageMap = {
+  PROFILE_INCOMPLETE:
+    "The school profile is incomplete. Please ask the school admin to complete the profile to proceed.",
+
+  PROFILE_SUBMITTED:
+    "", // allowed – no error
+
+  ACTIVE:
+    "", // allowed – no error
+
+  INACTIVE:
+    "The school is currently inactive. You cannot perform this action at the moment.",
+
+  SUSPENDED:
+    "The school has been suspended. Please contact support for more information.",
+
+  REJECTED:
+    "The school profile was rejected. Please ask the school admin to resubmit the profile.",
+};
+
   const handleAction = (school) => {
-    if (school.status !== "ACTIVE" && school.status !== "PROFILE_SUBMITTED") {
-      showToast(
-        "School admin has not completed school profile, once they will complete the profile, you will be able to perform action.",
-        "error",
-      );
-      return;
-    }
+    console.log("hello school", school);
+   if (
+  school.status === "PROFILE_INCOMPLETE" ||
+  school.status === "REJECTED" 
+) {
+  showToast(statusMessageMap[school.status], "error");
+  return;
+}
+
 
     setSelectedSchool(school);
     setModalOpen(true);

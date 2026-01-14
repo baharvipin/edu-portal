@@ -61,4 +61,6 @@ const Toast = forwardRef((props, ref) => {
   );
 });
 
+Toast.displayName = "Toast";
+
 export default Toast;

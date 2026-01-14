@@ -1,5 +1,5 @@
 import React from "react";
-import { Paper, Typography, Button, Box } from "@mui/material";
+import { Paper, Typography, Box } from "@mui/material";
 
 function DashboardCard({ icon, title, count }) {
   return (

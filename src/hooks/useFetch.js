@@ -33,7 +33,9 @@ export default function useFetch(url, options = {}, enabled = true) {
           const msg = result?.message || "Something went wrong";
           try {
             showToast(msg, "error");
-          } catch (e) {}
+          } catch (e) {
+            // ignore toast errors
+          }
           throw new Error(msg);
         }
 
@@ -44,7 +46,7 @@ export default function useFetch(url, options = {}, enabled = true) {
 
         // Show success toast for non-GET operations when API returns a message
         const method = (options.method || "GET").toUpperCase();
-        if (method == "GET" && result && result.message) {
+        if (method === "GET" && result && result.message) {
           showToast(result.message, "success");
         }
       } catch (err) {
@@ -53,7 +55,9 @@ export default function useFetch(url, options = {}, enabled = true) {
         }
         try {
           showToast(err.message || "Request failed", "error");
-        } catch (e) {}
+        } catch (e) {
+          // ignore toast errors
+        }
       } finally {
         if (isMounted) {
           setLoading(false);

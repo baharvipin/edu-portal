@@ -4,22 +4,9 @@ import { useNavigate } from "react-router-dom";
 export const useAuthRedirect = () => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
+  useEffect(() => { 
     const userRole = localStorage.getItem("userRole");
     const status = localStorage.getItem("status");
-
-    // Not logged in
-    // if (!token) {
-    //   navigate("/login", { replace: true });
-    //   return;
-    // }
-
-    // SUPER ADMIN
-    // if (userRole === "SUPER_ADMIN") {
-    //   navigate("/superadmin/profile", { replace: true });
-    //   return;
-    // }
 
     // SCHOOL ADMIN
     if (userRole === "ADMIN") {

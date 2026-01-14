@@ -45,7 +45,7 @@ function Section({ title, children }) {
   );
 }
 
-function SchoolProfilePage({ registrationData }) {
+function SchoolProfilePage({ registrationData: _registrationData }) {
   const navigate = useNavigate();
 
   const [medium, setMedium] = useState("English");

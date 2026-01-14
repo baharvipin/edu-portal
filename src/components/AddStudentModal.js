@@ -107,7 +107,7 @@ function AddStudentModal({ open, onClose, onSuccess, student = null }) {
     let value = e.target.value;
     setForm({ ...form, [key]: value });
     setErrors({ ...errors, [key]: "" });
-    if (key == "classId") {
+    if (key === "classId") {
       const sections =
         classesRes?.classes.find((cls) => cls.id === value)?.sections ?? [];
 

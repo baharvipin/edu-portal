@@ -48,12 +48,6 @@ function LoginPage() {
     return emailRegex.test(email);
   };
 
-  const validatePassword = (password) => {
-    // At least 8 characters, 1 uppercase, 1 lowercase, 1 number
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-    return passwordRegex.test(password);
-  };
-
   const validateForm = () => {
     const newErrors = {};
 
@@ -62,13 +56,6 @@ function LoginPage() {
     } else if (!validateEmail(formData.email)) {
       newErrors.email = "Please enter a valid email address";
     }
-
-    // if (!formData.password) {
-    //   newErrors.password = "Password is required";
-    // } else if (!validatePassword(formData.password)) {
-    //   newErrors.password =
-    //     "Password must be at least 8 characters and include uppercase, lowercase, and a number";
-    // }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

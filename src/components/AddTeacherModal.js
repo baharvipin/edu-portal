@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   Modal,
   Box,
@@ -13,8 +13,6 @@ import {
   Chip,
   FormHelperText,
 } from "@mui/material";
-import useFetch from "../hooks/useFetch";
-import { parseJwt } from "../utility/commonTask";
 
 const modalStyle = {
   position: "absolute",

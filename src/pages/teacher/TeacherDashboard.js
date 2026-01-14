@@ -9,10 +9,6 @@ import {
   Box,
   Avatar,
   Chip,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
   Divider,
   LinearProgress,
   Paper,
@@ -21,8 +17,6 @@ import {
 
 // Icons
 import BookIcon from "@mui/icons-material/MenuBook";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import HistoryIcon from "@mui/icons-material/History";
 // Icons
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmailIcon from "@mui/icons-material/Email";
@@ -64,7 +58,7 @@ export default function TeacherDashboard() {
     );
   }
 
-  const { teacher, summary, myClasses, pendingActions, recentActivities } =
+  const { teacher, summary, myClasses } =
     dashboard;
 
   return (

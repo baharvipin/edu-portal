@@ -31,8 +31,6 @@ function TeachersPage() {
 
   const {
     data: teachersResponse,
-    loading: teachersLoading,
-    error: teachersError,
   } = useFetch(
     `/api/teachers/${tokenDetails.schoolId}`,
     undefined,
@@ -46,9 +44,7 @@ function TeachersPage() {
   }, [teachersResponse]);
 
   const {
-    data: subjectsResponse,
-    loading: subjectsLoading,
-    error: subjectsError,
+    data: subjectsResponse
   } = useFetch(
     `/api/subjects/${tokenDetails.schoolId}`,
     {},
@@ -65,8 +61,8 @@ function TeachersPage() {
 
   const {
     data: addTeacherResponse,
-    loading: addingTeacher,
-    error: addTeacherError,
+    loading: _addingTeacher,
+    error: _addTeacherError,
   } = useFetch(
     submitPayload?.mode === "edit"
       ? `/api/teachers/${submitPayload.teacherId}`

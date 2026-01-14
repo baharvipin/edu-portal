@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Container,
-  CssBaseline,
-  Grid,
-  Paper,
-  Typography,
-  Button,
-} from "@mui/material";
-import ClassIcon from "@mui/icons-material/Class";
+import { Box, Container, CssBaseline, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 import DashboardCard from "./DashboardCard";
@@ -29,7 +20,6 @@ function DashboardPage() {
 
   const {
     data: dashboardRes,
-    loading,
     error,
   } = useFetch(`/api/school/${tokenDetails?.schoolId}/overview`);
 

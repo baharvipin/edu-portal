@@ -39,15 +39,7 @@ const StudentDashboard = lazy(
 // const TeacherSubjects = lazy(() => import("../pages/teacher/TeacherSubjects"));
 // const TeacherStudents = lazy(() => import("../pages/teacher/TeacherStudents"));
 
-function ProtectedRoute({ children }) {
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-
-  if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
-}
+// legacy ProtectedRoute removed (unused)
 
 // function ProfileRoute() {
 //   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";

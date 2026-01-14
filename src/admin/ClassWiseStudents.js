@@ -23,7 +23,7 @@ import { parseJwt } from "../utility/commonTask";
 
 function ClassWiseStudents() {
   const [classes, setClasses] = useState([]);
-  const [sections, setSections] = useState([]);
+  const [_sections, _setSections] = useState([]);
   const [openClass, setOpenClass] = useState(false);
   const [openSection, setOpenSection] = useState(false);
 

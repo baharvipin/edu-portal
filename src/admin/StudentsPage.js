@@ -9,8 +9,6 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  Select,
-  MenuItem,
 } from "@mui/material";
 import AddStudentModal from "../components/AddStudentModal";
 import useFetch from "../hooks/useFetch";
@@ -27,13 +25,13 @@ function StudentsPage() {
   const [activateStudentId, setActivateStudentId] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [_refreshKey, setRefreshKey] = useState(0);
   const [open, setOpen] = useState(false);
-  const [selectedClass, setSelectedClass] = useState("All");
+  const [_selectedClass, _setSelectedClass] = useState("All");
   const [classes, setClasses] = useState([]);
 
-  const [subjectsLoading, setSubjectsLoading] = useState(false);
-  const [subjectsError, setSubjectsError] = useState(null);
+  const [_subjectsLoading, setSubjectsLoading] = useState(false);
+  const [_subjectsError, setSubjectsError] = useState(null);
 
   const [subjects, setSubjects] = React.useState([]);
 

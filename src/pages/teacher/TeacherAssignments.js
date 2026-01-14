@@ -35,9 +35,7 @@ export default function TeacherAssignments() {
   /* ---------------- FETCH ASSIGNMENTS ---------------- */
 
   const {
-    data: assignmentsResponse,
-    loading,
-    error,
+    data: assignmentsResponse
   } = useFetch(
     `/api/teachers/${schoolId}/teacher-assignments`,
     { refreshKey },
@@ -65,13 +63,8 @@ export default function TeacherAssignments() {
   //   submitPayload !== null,
   // );
 
-  const METHOD_MODE = {
-    EDIT: "edit",
-    DELETE: "delete",
-    CREATE: "create",
-  };
 
-  const { data: saveResponse, loading: saving } = useFetch(
+  const { data: saveResponse } = useFetch(
     submitPayload?.mode === "edit"
       ? `/api/teachers/assignments/${submitPayload.assignmentId}`
       : submitPayload?.mode === "delete"
