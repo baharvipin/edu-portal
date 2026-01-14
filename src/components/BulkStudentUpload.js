@@ -32,7 +32,6 @@ export default function BulkStudentUpload({ schoolId, onSuccess }) {
     reader.onload = (event) => {
       try {
         const parsed = JSON.parse(event.target.result);
-        console.log("parsed json", parsed);
         if (!Array.isArray(parsed)) {
           setError("JSON must be an array of students");
           return;

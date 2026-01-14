@@ -62,16 +62,11 @@ export default function AssignModal({
     }
   }, [teachersError, classesError, subjectsError]);
 
-  //   console.log("classes in assign modal", classes);
-  //   console.log("teachers in assign modal", teachers);
-  //   console.log("subjects in assign modal", subjects);
-
   const selectedClass = classes?.find((c) => c.id === classId);
 
   /* ---------------- PREFILL EDIT ---------------- */
 
   useEffect(() => {
-    console.log("editData in assign modal", editData);
     if (editData) {
       setTeacherId(editData?.teacherId);
       setClassId(editData?.class?.id);
@@ -135,7 +130,6 @@ export default function AssignModal({
               value={teacherId}
               label="Teacher"
               onChange={(e) => {
-                console.log("selected teacher id", e.target.value);
                 setTeacherId(e.target.value);
               }}
             >

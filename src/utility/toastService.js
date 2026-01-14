@@ -19,7 +19,6 @@ export function setToastHandler(fn) {
 }
 
 export function showToast(message, type = "success") {
-  console.log("whyy", _showFn);
   try {
     if (!_showFn) return;
 

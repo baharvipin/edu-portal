@@ -150,7 +150,6 @@ function AddStudentModal({ open, onClose, onSuccess, student = null }) {
 
   const handleSubmit = () => {
     if (!validate()) return;
-    console.log("hello add student");
     setPayload({
       ...form,
       schoolId,

@@ -35,7 +35,6 @@ function DashboardPage() {
 
   useEffect(() => {
     if (dashboardRes) {
-      console.log("result dashboard", dashboardRes);
       setTeacherCount(dashboardRes?.teachers?.length);
       setStudentCount(dashboardRes?.students?.length);
       setSubjectCount(dashboardRes?.subjects?.length);

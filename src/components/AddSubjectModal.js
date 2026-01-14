@@ -55,7 +55,6 @@ function AddSubjectModal({
       });
       return;
     }
-    console.log("selectedSubject", selectedSubject, classes);
 
     setForm({
       id: selectedSubject?.id,
@@ -67,11 +66,6 @@ function AddSubjectModal({
 
     const selectedClass = classes.find(
       (c) => c.id === selectedSubject?.classId,
-    );
-    console.log(
-      "selectedSubjectselectedSubject",
-      selectedClass,
-      selectedSubject,
     );
     setSections(selectedClass ? selectedClass.sections || [] : []);
   }, [selectedSubject]);

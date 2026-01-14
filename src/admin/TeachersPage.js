@@ -41,7 +41,6 @@ function TeachersPage() {
 
   useEffect(() => {
     if (teachersResponse) {
-      console.log("teacher res", teachersResponse);
       setTeachers(teachersResponse?.teachers ?? []);
     }
   }, [teachersResponse]);
@@ -58,9 +57,7 @@ function TeachersPage() {
 
   useEffect(() => {
     if (subjectsResponse) {
-      console.log("hello subject res", subjectsResponse);
       const subjectNames = subjectsResponse?.subjects?.map((s) => s.name);
-      console.log("hello subject subjectNames", subjectNames);
 
       setSubjects(subjectNames ?? []);
     }
@@ -128,7 +125,6 @@ function TeachersPage() {
   };
 
   const handleEditTeacher = (teacher) => {
-    console.log("hw", teacher);
     setEditTeacher(teacher);
     setOpen(true);
   };

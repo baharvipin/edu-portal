@@ -50,7 +50,6 @@ export default function TeacherAssignments() {
     }
   }, [assignmentsResponse]);
 
-  console.log("assignmentsResponse", assignmentsResponse);
   /* ---------------- CREATE / UPDATE ---------------- */
 
   // const { data: saveResponse, loading: saving } = useFetch(
@@ -155,7 +154,6 @@ export default function TeacherAssignments() {
     })),
   );
 
-  console.log("flattenedAssignments", flattenedAssignments);
   /* ---------------- UI ---------------- */
 
   return (

@@ -163,7 +163,6 @@ function SubjectsPage() {
   };
 
   const handleEditClick = (subject) => {
-    console.log("edit", subject);
     setSelectedSubject(subject);
     setOpen(true);
   };

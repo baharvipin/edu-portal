@@ -29,7 +29,6 @@ export default function StudentDashboard() {
   const [loading, setLoading] = useState(true);
   const [studentData, setStudentData] = useState({});
   const param = useParams();
-  console.log("hello", param);
 
   useEffect(() => {
     const fetchStudentDashboard = async () => {

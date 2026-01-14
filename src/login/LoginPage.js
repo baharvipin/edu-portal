@@ -116,9 +116,6 @@ function LoginPage() {
       );
 
       const data = await response.json();
-      // Temporary log for debugging; remove in production
-      // eslint-disable-next-line no-console
-      console.log("Login response data:", data);
 
       if (!data.status) {
         if (data.errors && typeof data.errors === "object") {
@@ -159,7 +156,6 @@ function LoginPage() {
         } else {
           // User clicked Cancel → stay on the current page
           // Optionally, you can also show a toast or just do nothing
-          console.log("User chose not to change password yet.");
         }
       }
 

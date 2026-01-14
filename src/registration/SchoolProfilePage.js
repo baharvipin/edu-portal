@@ -179,9 +179,6 @@ function SchoolProfilePage({ registrationData }) {
         headers.Authorization = `Bearer ${authToken}`;
       }
 
-      // eslint-disable-next-line no-console
-      console.log("Sending payload:", payload);
-
       const response = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/api/school/complete-profile`,
         {
@@ -203,9 +200,6 @@ function SchoolProfilePage({ registrationData }) {
           `Server error (${response.status}): ${text || "Unknown error"}`,
         );
       }
-
-      // eslint-disable-next-line no-console
-      console.log("API Response:", { status: response.status, result });
 
       if (!response.ok) {
         if (result.errors && typeof result.errors === "object") {

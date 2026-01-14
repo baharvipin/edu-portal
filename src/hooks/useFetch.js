@@ -28,7 +28,6 @@ export default function useFetch(url, options = {}, enabled = true) {
         );
 
         const result = await response.json();
-        console.log("result", result);
 
         if (!response.ok) {
           const msg = result?.message || "Something went wrong";
@@ -46,7 +45,6 @@ export default function useFetch(url, options = {}, enabled = true) {
         // Show success toast for non-GET operations when API returns a message
         const method = (options.method || "GET").toUpperCase();
         if (method == "GET" && result && result.message) {
-          console.log("gett");
           showToast(result.message, "success");
         }
       } catch (err) {

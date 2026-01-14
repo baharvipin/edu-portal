@@ -43,7 +43,6 @@ function SuperAdminDashboard() {
         const token = localStorage.getItem("authToken"); // SUPER_ADMIN JWT
         // const user = parseJwt(token);
 
-        console.log("Fetching schools with token:", token);
         const response = await fetch(
           `${process.env.REACT_APP_API_BASE_URL}/api/superadmin/schools`,
           {
@@ -75,7 +74,6 @@ function SuperAdminDashboard() {
   }, []);
 
   const handleAction = (school) => {
-    console.log("Viewing school:", school);
     if (school.status !== "ACTIVE" && school.status !== "PROFILE_SUBMITTED") {
       showToast(
         "School admin has not completed school profile, once they will complete the profile, you will be able to perform action.",

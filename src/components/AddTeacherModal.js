@@ -43,8 +43,6 @@ function AddTeacherModal({
     subjects: [],
   });
 
-  console.log("editTeacher", editTeacher);
-
   const [errors, setErrors] = React.useState({});
 
   useEffect(() => {
@@ -72,7 +70,6 @@ function AddTeacherModal({
 
   // useEffect(() => {
   //   if (editTeacher) {
-  //     console.log("check if", editTeacher);
   //     const subjectNames = editTeacher?.subjects?.map((s) => s.subject.name);
 
   //     setForm({
@@ -82,7 +79,6 @@ function AddTeacherModal({
   //       subjects: subjectNames,
   //     });
   //   } else {
-  //     console.log("check else", form);
   //     setForm({
   //       name: "",
   //       email: "",
@@ -142,7 +138,6 @@ function AddTeacherModal({
     setErrors({});
     onClose();
   };
-  console.log("form.subjects subjects", form.subjects, subjects);
 
   return (
     <Modal open={open} onClose={handleClose}>

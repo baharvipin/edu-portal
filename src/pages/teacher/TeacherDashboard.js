@@ -46,7 +46,7 @@ export default function TeacherDashboard() {
       .then((res) => {
         return res.json();
       })
-      .then((data)=>setDashboard(data))
+      .then((data) => setDashboard(data))
       .catch((err) => {
         console.error("Dashboard fetch error:", err);
         showToast(err.message || "Failed to load dashboard", "error");

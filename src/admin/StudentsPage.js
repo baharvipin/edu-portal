@@ -160,7 +160,6 @@ function StudentsPage() {
   //   setOpen(false);
   // };
 
-  // console.log("editStudent", editStudent)
   const refetchStudents = () => {
     setRefreshStudents(true); //  refetch from API
   };
@@ -171,7 +170,6 @@ function StudentsPage() {
 
   // 3️⃣ Open modal
   const handleOpenAssign = (student) => {
-    console.log("hello opemning student", student);
     setSelectedStudent(student);
     setOpenSubject(true);
   };
@@ -218,7 +216,6 @@ function StudentsPage() {
   };
 
   function concatStudentSubjects(studentSubjects = []) {
-    console.log("helooo", studentSubjects);
     if (!Array.isArray(studentSubjects) || studentSubjects.length === 0) {
       return "";
     }

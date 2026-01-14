@@ -50,7 +50,6 @@ export default function SchoolOverviewPage() {
 
   useEffect(() => {
     if (dashboardRes) {
-      console.log("result dashboard", dashboardRes);
       setTeachers(dashboardRes?.teachers ?? []);
       setStudents(dashboardRes?.students ?? []);
       setSubjects(dashboardRes?.subjects ?? []);
